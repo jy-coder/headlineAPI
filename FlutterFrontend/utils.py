@@ -1,6 +1,9 @@
 import firebase_admin 
 from firebase_admin import auth, credentials
 import os
+from django.http import HttpResponse
+import json
+from django.forms.models import model_to_dict
 
 def initialize_firebase():
     FIREBASE_SERVICE = os.getenv("FIREBASE_SERVICE")
@@ -10,11 +13,15 @@ def initialize_firebase():
 
 def authenticate(req):
 	try:
-		id_token = req.headers.get("x-id-token", "")
+		id_token = req.headers.get("X-Id-Token", "")
+		# print(id_token)
 		return auth.verify_id_token(id_token)
 	except:
 		return None
 
+def error(message,status_code):
+	return HttpResponse({"error": message},status=status_code,content_type="application/json")
 
-def json(obj):
-    return json.dumps(obj)
+
+def jsonify(obj, status_code):
+	return HttpResponse(json.dumps(obj),status=status_code,content_type="application/json")
