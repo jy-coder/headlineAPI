@@ -4,7 +4,7 @@ from django.db import models
 
 
 class User(models.Model):
-    user_id = models.AutoField(primary_key=True, unique=True)
+    id = models.AutoField(primary_key=True, unique=True)
     uuid = models.CharField(max_length =100, unique=True,default="")
     email = models.CharField(max_length=1000, unique=True)
     full_name = models.CharField(max_length=1000)
@@ -15,7 +15,7 @@ class User(models.Model):
 
 
 class Article(models.Model):
-    article_id = models.AutoField(primary_key=True, unique=True)
+    id = models.AutoField(primary_key=True, unique=True)
     title = models.CharField(max_length=1000, blank=True)
     link = models.CharField(max_length=1000, blank=True)
     summary = models.CharField(max_length=3000, blank=True)
@@ -27,16 +27,17 @@ class Article(models.Model):
         db_table = "Article"
 
 
-class ArticleCategory(models.Model):
-    category_id = models.AutoField(primary_key=True, unique=True)
+class Category(models.Model):
+    id = models.AutoField(primary_key=True, unique=True)
     category_name = models.CharField(max_length=100, blank=True)
     class Meta:
-        db_table = "ArticleCategory"
+        db_table = "Category"
 
 
-class UserArticleCategory(models.Model):
-    user_article_id = models.AutoField(primary_key=True, unique=True)
+class Subscription(models.Model):
+    id = models.AutoField(primary_key=True, unique=True)
     user = models.ForeignKey(User,on_delete=models.CASCADE)
-    category =  models.ForeignKey(ArticleCategory,on_delete=models.CASCADE)
+    category =  models.ForeignKey(Category,on_delete=models.CASCADE)
     class Meta:
-        db_table = "UserArticleCategory"
+        db_table = "Subscription"
+        unique_together = (('user', 'category'),)
