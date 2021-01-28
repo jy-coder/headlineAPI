@@ -19,7 +19,7 @@ def category(req):
     # print(req.headers)
     user = authenticate(req)
     # print(user)
-    categories = list(ArticleCategory.objects.values())
+    categories = list(Category.objects.values())
     return jsonify(categories, status_code=200)
 
 @csrf_exempt
@@ -33,11 +33,29 @@ def register(req):
 
 
 @csrf_exempt
-@require_http_methods(["POST"])
-def set_category(req):
+@require_http_methods(["POST","GET"])
+def subscription(req):
     user = authenticate(req)
-    print(req.body)
+    email = user["email"]
+    user = retrieve_user(email)
+
+    if(req.method == "POST"):
+        data = parse_json(req)
+        save_subscription(data, user)
+        return jsonify({},status_code=200)
+
+    elif(req.method == "GET"):
+        subscriptions = get_subscription(user)
+        return jsonify(subscriptions,status_code=200)
+
     return jsonify({},status_code=200)
+    
+   
+
+
+
+
+
 
 
 
