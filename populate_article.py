@@ -32,7 +32,8 @@ def extract_info(article_links,category,source):
         title = news.headline
         summary = news.summary
         keywords = news.keywords
-        article = Article(title=title,link=link,summary=summary,keywords=keywords,category=category,source=source)
+        publication_date = news.date_publish,
+        article = Article(title=title,link=link,summary=summary,keywords=keywords,category=category,source=source,publication_date=publication_date)
         article.save()
         print("article successfully saved to database")
         # article = {

@@ -9,9 +9,9 @@ from database.models import *
 
 
 if __name__ == '__main__':
-    catogries = ["tech", "multimedia", "world", "business", "sport", "life", "opinion", "asia", "all"]
+    catogries = ["all","tech", "multimedia", "world", "business", "sport", "life", "opinion", "asia"]
     for category in catogries:
-        category = ArticleCategory(category_name=category)
+        category = Category(category_name=category)
         category.save()
 
 

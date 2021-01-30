@@ -53,7 +53,19 @@ def subscription(req):
    
 
 
+@csrf_exempt
+@require_http_methods(["GET"])
+def article(req):
+    # user = authenticate(req)
+    # email = user["email"]
+    # user = retrieve_user(email)
 
+
+    articles = list(Article.objects.values())
+    # print(articles)
+
+    return jsonify(articles,status_code=200)
+    
 
 
 

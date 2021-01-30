@@ -22,6 +22,8 @@ class Article(models.Model):
     keywords = models.CharField(max_length=3000, blank=True)
     category = models.CharField(max_length=100, blank=True)
     source = models.CharField(max_length=100, blank=True)
+    publication_date = models.DateTimeField(auto_now_add=True, blank=True)
+    date = models.DateTimeField(auto_now_add=True, blank=True)
 
     class Meta:
         db_table = "Article"

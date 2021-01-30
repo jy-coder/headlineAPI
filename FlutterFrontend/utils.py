@@ -31,7 +31,7 @@ def parse_json(req):
 
 
 def jsonify(obj, status_code):
-	return HttpResponse(json.dumps(obj),status=status_code,content_type="application/json")
+	return HttpResponse(json.dumps(obj, indent=4, sort_keys=True, default=str),status=status_code,content_type="application/json")
 
 def retrieve_user(email):
 	user = User.objects.get(email=email)
