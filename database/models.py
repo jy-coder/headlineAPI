@@ -19,6 +19,8 @@ class Article(models.Model):
     title = models.CharField(max_length=1000, blank=True)
     link = models.CharField(max_length=1000, blank=True)
     summary = models.CharField(max_length=3000, blank=True)
+    description = models.TextField( blank=True)
+    image_url = models.TextField( blank=True)
     keywords = models.CharField(max_length=3000, blank=True)
     category = models.CharField(max_length=100, blank=True)
     source = models.CharField(max_length=100, blank=True)

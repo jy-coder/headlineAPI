@@ -10,7 +10,7 @@ import requests
 from bs4 import BeautifulSoup
 import json
 
-# scraping function
+# scraping from rss
 def get_rss(url):
     article_links = []
 
@@ -32,10 +32,27 @@ def extract_info(article_links,category,source):
         title = news.headline
         summary = news.summary
         keywords = news.keywords
-        publication_date = news.date_publish,
-        article = Article(title=title,link=link,summary=summary,keywords=keywords,category=category,source=source,publication_date=publication_date)
+        publication_date = news.date_publish
+        image_url = news.image_url
+        
+        # need to scrape description from each website that we want
+        if source == "straitstimes":
+            description_list = []
+            page = requests.get(link, headers={'User-Agent': 'Mozilla/5.0'})
+            soup = BeautifulSoup(page.content, 'html.parser')
+            result = soup.find_all("p")
+            for r in result[2:len(result)-3]:
+                description_list.append(r.get_text() + "\n")
+            description = " ".join(description_list)
+
+        # TODO: scape image url
+
+        article = Article(title=title,link=link,summary=summary,keywords=keywords,category=category,source=source,publication_date=publication_date,description=description,image_url=image_url)
         article.save()
+         
+        print(image_url)
         print("article successfully saved to database")
+        #odd field-item
         # article = {
         #     "title": title,
         #     "link": link,
