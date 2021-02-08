@@ -8,5 +8,8 @@ urlpatterns = [
     path("register", api.register, name="register"),
     path("subscription", api.subscription, name="subscription"),
 
-    path("article", api.article, name="article")
+    path("article/", api.article, name="article"),
+    # path("history/", api.save_history, name="save_history"),
+    path("history/", api.history, name="history")
+
 ]
