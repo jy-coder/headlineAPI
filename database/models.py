@@ -51,6 +51,8 @@ class ReadingHistory(models.Model):
     history_id = models.AutoField(primary_key=True, unique=True)
     article = models.ForeignKey(Article,on_delete=models.CASCADE)
     user = models.ForeignKey(User,on_delete=models.CASCADE)
+    history_date = models.DateTimeField(auto_now_add=True, blank=True)
+
     class Meta:
         db_table = "ReadingHistory"
         unique_together = (('user', 'article'),)

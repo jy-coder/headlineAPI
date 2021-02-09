@@ -6,6 +6,7 @@ from .utils import *
 from .Utils.subscription import *
 from django.http import HttpResponse
 from django.db.models import F
+from datetime import datetime, timedelta
 
 initialize_firebase()
 
@@ -64,7 +65,6 @@ def article(req):
     page = req.GET.get("page", 1)
     category = req.GET.get("category", "all")
 
-    print(category);
 
 
     page = int(page)
@@ -98,18 +98,45 @@ def history(req):
         page = req.GET.get("page", 1)
         page = int(page)
         offset = (page - 1) * itemsPerPage + 1
+        date = req.GET.get("dateRange", None)
+       
         # user = authenticate(req)
         # email = user["email"]
         email = "bee@test.com"
         user = retrieve_user(email)
-        history = ReadingHistory.objects.filter(user=user).select_related('article')\
-                .annotate(id=F('article__article_id'),title=F('article__title'),link=F('article__link'),summary=F('article__summary')\
-                ,description=F('article__description'),image_url=F('article__image_url'),\
-                category=F('article__category'),source=F('article__source'), publication_date=F('article__publication_date'), date=F('article__date')\
-        ).values("id","title", "link", 
-        "summary", "description", "image_url", 
-        "category", "source", "publication_date", "date").order_by("-publication_date")[offset:offset+itemsPerPage]
-        return jsonify(list(history),status_code=200)
+
+        if not date:
+            history = ReadingHistory.objects.filter(user=user).select_related('article')\
+                    .annotate(id=F('article__article_id'),title=F('article__title'),link=F('article__link'),summary=F('article__summary')\
+                    ,description=F('article__description'),image_url=F('article__image_url'),\
+                    category=F('article__category'),source=F('article__source'), publication_date=F('article__publication_date'), date=F('article__date')\
+            ).values("id","title", "link", 
+            "summary", "description", "image_url", 
+            "category", "source", "publication_date", "date","history_date").order_by("-publication_date")[offset:offset+itemsPerPage]
+            return jsonify(list(history),status_code=200)
+
+        elif date:
+            set_date_gt = datetime.now()
+            set_date_lt = datetime.now()
+            print(date)
+
+            if date == "from 7 days ago":
+                set_date_gt = datetime.now()-timedelta(days=7)
+       
+            elif date == "from 14 days ago":
+                set_date_lt = datetime.now()-timedelta(days=7)
+                set_date_gt= datetime.now()-timedelta(days=14)
+
+
+            history = ReadingHistory.objects.filter(user=user,history_date__lte=set_date_lt.strftime("%Y-%m-%d"), history_date__gt=set_date_gt).select_related('article')\
+                    .annotate(id=F('article__article_id'),title=F('article__title'),link=F('article__link'),summary=F('article__summary')\
+                    ,description=F('article__description'),image_url=F('article__image_url'),\
+                    category=F('article__category'),source=F('article__source'), publication_date=F('article__publication_date'), date=F('article__date')\
+            ).values("id","title", "link", 
+            "summary", "description", "image_url", 
+            "category", "source", "publication_date", "date","history_date").order_by("-publication_date")[offset:offset+itemsPerPage]
+            return jsonify(list(history),status_code=200)
+
 
 
     elif(req.method == "POST"):

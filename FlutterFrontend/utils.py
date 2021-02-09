@@ -35,7 +35,7 @@ def jsonify(obj, status_code):
 
 def retrieve_user(email):
 	user = User.objects.get(email=email)
-	print(user)
+	# print(user)
 	return user
 
 
