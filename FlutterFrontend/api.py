@@ -19,12 +19,10 @@ def test1(req):
 @csrf_exempt
 @require_http_methods(["GET"])
 def category(req):
-    # print(req.headers)
     user = authenticate(req)
-    # print(user)
-    # .order_by('-id')[:10][::-1]
     categories = list(Category.objects.values())
     return jsonify(categories, status_code=200)
+
 
 @csrf_exempt
 @require_http_methods(["POST"])
@@ -54,8 +52,6 @@ def subscription(req):
 
     return jsonify({},status_code=200)
     
-   
-
 
 @csrf_exempt
 @require_http_methods(["GET"])
@@ -65,13 +61,9 @@ def article(req):
     page = req.GET.get("page", 1)
     category = req.GET.get("category", "all")
 
-
-
     page = int(page)
     offset = (page - 1) * itemsPerPage + 1
-    # user = authenticate(req)
-    # email = user["email"]
-    # user = retrieve_user(email)
+
 
      #localhost:8000/article/?page=1
     if category == "all":
@@ -90,8 +82,12 @@ def article(req):
     
 
 @csrf_exempt
-@require_http_methods(["GET"])
+@require_http_methods(["GET","POST"])
 def history(req):
+    user = authenticate(req)
+    email = user["email"]
+    user = retrieve_user(email)
+
     if(req.method == "GET"):
         itemsPerPage = 2
 
@@ -100,25 +96,13 @@ def history(req):
         offset = (page - 1) * itemsPerPage + 1
         date = req.GET.get("dateRange", None)
        
-        # user = authenticate(req)
-        # email = user["email"]
-        email = "bee@test.com"
-        user = retrieve_user(email)
-
+        #for date filtering
         if not date:
-            history = ReadingHistory.objects.filter(user=user).select_related('article')\
-                    .annotate(id=F('article__article_id'),title=F('article__title'),link=F('article__link'),summary=F('article__summary')\
-                    ,description=F('article__description'),image_url=F('article__image_url'),\
-                    category=F('article__category'),source=F('article__source'), publication_date=F('article__publication_date'), date=F('article__date')\
-            ).values("id","title", "link", 
-            "summary", "description", "image_url", 
-            "category", "source", "publication_date", "date","history_date").order_by("-publication_date")[offset:offset+itemsPerPage]
-            return jsonify(list(history),status_code=200)
+            history = ReadingHistory.objects.filter(user=user)
 
         elif date:
             set_date_gt = datetime.now()
             set_date_lt = datetime.now()
-            print(date)
 
             if date == "from 7 days ago":
                 set_date_gt = datetime.now()-timedelta(days=7)
@@ -128,24 +112,21 @@ def history(req):
                 set_date_gt= datetime.now()-timedelta(days=14)
 
 
-            history = ReadingHistory.objects.filter(user=user,history_date__lte=set_date_lt.strftime("%Y-%m-%d"), history_date__gt=set_date_gt).select_related('article')\
-                    .annotate(id=F('article__article_id'),title=F('article__title'),link=F('article__link'),summary=F('article__summary')\
-                    ,description=F('article__description'),image_url=F('article__image_url'),\
-                    category=F('article__category'),source=F('article__source'), publication_date=F('article__publication_date'), date=F('article__date')\
-            ).values("id","title", "link", 
-            "summary", "description", "image_url", 
-            "category", "source", "publication_date", "date","history_date").order_by("-publication_date")[offset:offset+itemsPerPage]
-            return jsonify(list(history),status_code=200)
+            history = ReadingHistory.objects.filter(user=user,history_date__lte=set_date_lt.strftime("%Y-%m-%d"), history_date__gt=set_date_gt)
+            
+
+        history = history.select_related('article')\
+                .annotate(id=F('article__article_id'),title=F('article__title'),link=F('article__link'),summary=F('article__summary')\
+                ,description=F('article__description'),image_url=F('article__image_url'),\
+                category=F('article__category'),source=F('article__source'), publication_date=F('article__publication_date'), date=F('article__date')\
+        ).values("id","title", "link", 
+        "summary", "description", "image_url", 
+        "category", "source", "publication_date", "date","history_date").order_by("-publication_date")[offset:offset+itemsPerPage]
+        return jsonify(list(history),status_code=200)
 
 
-
+  #localhost:8000/history/?article=13
     elif(req.method == "POST"):
-        user = authenticate(req)
-        email = user["email"]
-        # email = "bee@test.com"
-        user = retrieve_user(email)
-
-        #localhost:8000/history/?article=13
         article_id = req.GET.get("article", None)
 
         if article_id:
@@ -159,29 +140,6 @@ def history(req):
     return jsonify({},status_code=200)
     
     
- 
-
-
-@csrf_exempt
-@require_http_methods(["POST"])
-def save_history(req):
-    user = authenticate(req)
-    email = user["email"]
-    # email = "bee@test.com"
-    user = retrieve_user(email)
-
-    #localhost:8000/history/?article=13
-    article_id = req.GET.get("article", None)
-
-    if article_id:
-        article_id = int(article_id)
-        article = Article.objects.get(article_id = article_id)
-        read_history = ReadingHistory(user=user, article=article)
-        read_history.save()
-
-    
-
-    return jsonify({},status_code=200)
     
 
 
