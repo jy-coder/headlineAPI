@@ -1,8 +1,6 @@
 
 from django.db import models
 
-
-
 class User(models.Model):
     user_id = models.AutoField(primary_key=True, unique=True)
     uuid = models.CharField(max_length =100, unique=True,default="")
@@ -55,5 +53,27 @@ class ReadingHistory(models.Model):
 
     class Meta:
         db_table = "ReadingHistory"
+        unique_together = (('user', 'article'),)
+
+
+
+class Bookmark(models.Model):
+    bookmark_id = models.AutoField(primary_key=True, unique=True)
+    article = models.ForeignKey(Article,on_delete=models.CASCADE)
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = "Bookmark"
+        unique_together = (('user', 'article'),)
+
+
+
+class Recommend(models.Model):
+    recommend_id = models.AutoField(primary_key=True, unique=True)
+    article = models.ForeignKey(Article,on_delete=models.CASCADE)
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = "Recommend"
         unique_together = (('user', 'article'),)
 

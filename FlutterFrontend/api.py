@@ -135,11 +135,40 @@ def history(req):
             read_history = ReadingHistory(user=user, article=article)
             read_history.save()
 
-    
+    return jsonify({},status_code=200)
+
+
+
+@csrf_exempt
+@require_http_methods(["GET","POST"])
+def bookmark(req):
+    user = authenticate(req)
+    email = user["email"]
+    user = retrieve_user(email)
+
+    if(req.method == "GET"):
+        itemsPerPage = 2
+
+        page = req.GET.get("page", 1)
+        page = int(page)
+        offset = (page - 1) * itemsPerPage + 1
+
+        bookmark = Bookmark.objects.filter(user=user).select_related('article').annotate(id=F('article__article_id')\
+            ,title=F('article__title'),link=F('article__link'),summary=F('article__summary')\
+                    ,description=F('article__description'),image_url=F('article__image_url'),\
+                    category=F('article__category'),source=F('article__source'), publication_date=F('article__publication_date'), date=F('article__date')\
+        ).values("id","title", "link", "summary", "description", "image_url", "category", "source", "publication_date", "date","history_date").order_by("-publication_date")[offset:offset+itemsPerPage]
+
+
+    elif(req.method == "POST"):
+        article_id = req.GET.get("article", None)
+
+        if article_id:
+            article_id = int(article_id)
+            article = Article.objects.get(article_id = article_id)
+            bookmark = Bookmark(user=user, article=article)
+            bookmark.save()
+
+
 
     return jsonify({},status_code=200)
-    
-    
-    
-
-

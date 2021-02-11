@@ -9,6 +9,6 @@ urlpatterns = [
     path("subscription", api.subscription, name="subscription"),
 
     path("article/", api.article, name="article"),
-    path("history/", api.history, name="history")
-
+    path("history/", api.history, name="history"),
+    path("bookmark/", api.bookmark, name="bookmark")
 ]
