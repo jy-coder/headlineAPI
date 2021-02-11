@@ -56,26 +56,40 @@ def subscription(req):
 @csrf_exempt
 @require_http_methods(["GET"])
 def article(req):
+    # user = authenticate(req)
+    # email = user["email"]
+    email = "test3@test.com"
+  
+    user = retrieve_user(email)
+
     itemsPerPage = 2
 
     page = req.GET.get("page", 1)
     category = req.GET.get("category", "all")
 
     page = int(page)
-    offset = (page - 1) * itemsPerPage + 1
+    start = (page - 1) * itemsPerPage
+    end = page * itemsPerPage
 
-
-     #localhost:8000/article/?page=1
-    if category == "all":
-        articles = Article.objects.order_by("-publication_date")[offset:offset+itemsPerPage].annotate(id=F('article_id'))
-   
+    #localhost:8000/article/?page=1
     #localhost:8000/article/?page=2&category=business
     #localhost:8000/article/?page=3&category=all
+    if category != "all":
+        articles = Article.objects.filter(category=category)
     else:
-        articles = Article.objects.filter(category=category).order_by("-publication_date")[offset:offset+itemsPerPage].annotate(id=F('article_id'))
+       articles = Article.objects.all() 
+     
 
 
+    if user:
+        bookmarks_id_list = list(Bookmark.objects.filter(user=user).values_list("article__article_id",flat=True))
+        articles = articles.exclude(article_id__in=bookmarks_id_list)
+      
+
+    articles = articles.order_by("-publication_date")[start:end].annotate(id=F('article_id'))
+  
     articles = list(articles.values())
+  
     # print(articles)
 
     return jsonify(articles,status_code=200)
@@ -84,9 +98,11 @@ def article(req):
 @csrf_exempt
 @require_http_methods(["GET","POST"])
 def history(req):
-    user = authenticate(req)
-    email = user["email"]
+    # user = authenticate(req)
+    # email = user["email"]
+    email = "test3@test.com"
     user = retrieve_user(email)
+
 
     if(req.method == "GET"):
         itemsPerPage = 2
@@ -106,13 +122,14 @@ def history(req):
 
             if date == "from 7 days ago":
                 set_date_gt = datetime.now()-timedelta(days=7)
+                set_date_lt = datetime.now() + timedelta(days=1)
        
             elif date == "from 14 days ago":
                 set_date_lt = datetime.now()-timedelta(days=7)
                 set_date_gt= datetime.now()-timedelta(days=14)
 
 
-            history = ReadingHistory.objects.filter(user=user,history_date__lte=set_date_lt.strftime("%Y-%m-%d"), history_date__gt=set_date_gt)
+            history = ReadingHistory.objects.filter(user=user,history_date__gte=set_date_gt.strftime("%Y-%m-%d"), history_date__lt= set_date_lt)
             
 
         history = history.select_related('article')\
