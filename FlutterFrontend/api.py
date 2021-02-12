@@ -157,10 +157,11 @@ def history(req):
 
 
 @csrf_exempt
-@require_http_methods(["GET","POST"])
+@require_http_methods(["GET","POST", "DELETE"])
 def bookmark(req):
-    user = authenticate(req)
-    email = user["email"]
+    # user = authenticate(req)
+    # email = user["email"]
+    email = "test3@test.com"
     user = retrieve_user(email)
 
     if(req.method == "GET"):
@@ -174,8 +175,10 @@ def bookmark(req):
             ,title=F('article__title'),link=F('article__link'),summary=F('article__summary')\
                     ,description=F('article__description'),image_url=F('article__image_url'),\
                     category=F('article__category'),source=F('article__source'), publication_date=F('article__publication_date'), date=F('article__date')\
-        ).values("id","title", "link", "summary", "description", "image_url", "category", "source", "publication_date", "date","history_date").order_by("-publication_date")[offset:offset+itemsPerPage]
-
+        ).values("id","title", "link", "summary", "description", "image_url", "category", "source", "publication_date", "date").order_by("-publication_date")[offset:offset+itemsPerPage]
+        
+        
+        return jsonify(list(bookmark),status_code=200)
 
     elif(req.method == "POST"):
         article_id = req.GET.get("article", None)
@@ -185,6 +188,15 @@ def bookmark(req):
             article = Article.objects.get(article_id = article_id)
             bookmark = Bookmark(user=user, article=article)
             bookmark.save()
+
+    #localhost:8000/bookmark/?article_id=1
+    elif(req.method == "DELETE"):
+        article_id = req.GET.get("article", None)
+        if article_id:
+            article_id = int(article_id)
+            article = Article.objects.get(article_id = article_id)
+            bookmark = Bookmark.objects.filter(article=article, user=user)
+            bookmark.delete()
 
 
 
