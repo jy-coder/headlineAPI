@@ -43,6 +43,7 @@ def subscription(req):
 
     if(req.method == "POST"):
         data = parse_json(req)
+        print(data);
         save_subscription(data, user)
         return jsonify({},status_code=200)
 
@@ -51,6 +52,31 @@ def subscription(req):
         return jsonify(subscriptions,status_code=200)
 
     return jsonify({},status_code=200)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def user_subscription(req):
+    # user = authenticate(req)
+    # email = user["email"]
+    email = "test3@test.com"
+    user = retrieve_user(email)
+    subscriptions = Subscription.objects.filter(user=user).select_related("category").values("category__category_name").annotate(category_name=F('category__category_name'))
+
+   
+    # include 'all' category
+    all_dict = {}
+    find_all = Category.objects.filter(category_name="all").first()
+    all_dict["category_id"] = find_all.category_id
+    all_dict["category_name"] = find_all.category_name
+    
+
+    subscriptions = list(subscriptions.values("category_name","category_id"))
+
+    if(len(subscriptions) != 0):
+        subscriptions.insert(0,all_dict)
+
+    return jsonify(subscriptions,status_code=200)
+
     
 
 @csrf_exempt
@@ -201,3 +227,31 @@ def bookmark(req):
 
 
     return jsonify({},status_code=200)
+
+
+#localhost:8000/search_suggestion/?q=the
+@csrf_exempt
+@require_http_methods(["GET"])
+def search_suggestion(req):
+    search = req.GET.get("q", None)
+    articles = Article.objects.order_by("-publication_date").filter(title__contains=search)[:5]
+    articles = list(articles.values("article_id","title"))
+    return jsonify(articles,status_code=200)
+
+
+#localhost:8000/search_result/?article=15
+@csrf_exempt
+@require_http_methods(["GET"])
+def search_result(req):
+    search = req.GET.get("q", "")
+
+    if(search == ""):
+        return jsonify([],status_code=200)
+
+    articles = Article.objects.order_by("-publication_date").filter(title__contains=search)[:10]
+    articles = list(articles.values())
+    # article_id = req.GET.get("article", None)
+    # articles = Article.objects.filter(article_id=article_id)
+    # articles = list(articles.values())
+    return jsonify(articles,status_code=200)
+   
