@@ -6,6 +6,7 @@ class User(models.Model):
     uuid = models.CharField(max_length =100, unique=True,default="")
     email = models.CharField(max_length=1000, unique=True)
     full_name = models.CharField(max_length=1000)
+    last_active = models.DateTimeField(auto_now_add=True, blank=True)
 
     class Meta:
         db_table = "User"
@@ -72,6 +73,7 @@ class Recommend(models.Model):
     recommend_id = models.AutoField(primary_key=True, unique=True)
     article = models.ForeignKey(Article,on_delete=models.CASCADE)
     user = models.ForeignKey(User,on_delete=models.CASCADE)
+    recommend_date = models.DateTimeField(auto_now_add=True, blank=True)
 
     class Meta:
         db_table = "Recommend"

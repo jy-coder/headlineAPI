@@ -13,7 +13,7 @@ initialize_firebase()
 @csrf_exempt
 @require_http_methods(["GET"])
 def test1(req):
-    return HttpResponse(status=201)
+    return jsonify({}, status_code=200)
 
 
 @csrf_exempt
@@ -43,7 +43,7 @@ def subscription(req):
 
     if(req.method == "POST"):
         data = parse_json(req)
-        print(data);
+        # print(data);
         save_subscription(data, user)
         return jsonify({},status_code=200)
 
