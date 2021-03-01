@@ -7,21 +7,13 @@ from .Utils.subscription import *
 from django.http import HttpResponse
 from django.db.models import F
 from datetime import datetime, timedelta
+from django.forms.models import model_to_dict
 
 initialize_firebase()
 
 @csrf_exempt
 @require_http_methods(["GET"])
-def test1(req):
-    recommend = Recommend.objects.select_related('article').filter(article__category=category)\
-            .annotate(id=F('article__article_id'),title=F('article__title'),link=F('article__link'),summary=F('article__summary')\
-            ,description=F('article__description'),image_url=F('article__image_url'),\
-            category=F('article__category'),source=F('article__source'), publication_date=F('article__publication_date'), date=F('article__date')\
-    ).values("id","title", "link", 
-    "summary", "description", "image_url", 
-    "category", "source", "publication_date", "date")
-
-        
+def test1(req):        
     return jsonify({}, status_code=200)
 
 
@@ -90,12 +82,11 @@ def user_subscription(req):
 
 @csrf_exempt
 @require_http_methods(["GET"])
-def article(req):
+def articles(req):
     # user = authenticate(req)
     # email = user["email"]
     email = "test3@test.com"
     user = retrieve_user(email)
-    print(user)
 
     itemsPerPage = 2
     page = req.GET.get("page", 1)
@@ -146,6 +137,40 @@ def article(req):
   
   
     return jsonify(articles,status_code=200)
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def article(req):
+    # localhost:8000/article/?article_id=15&category=world
+    article_id = req.GET.get("article_id", None)
+    category = req.GET.get("category", None)
+
+    if category == "all":
+        article = list(Article.objects.filter(article_id__lt=article_id)\
+            .order_by("-article_id").values())[0]
+
+    elif category != "all":
+        article = list(Article.objects.filter(article_id__lt=article_id, category=category)\
+            .order_by("-article_id").values())[0]
+
+    article["id"] = article["article_id"]
+   
+    
+    return jsonify(article,status_code=200)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def category_count(req):
+    """
+    count number of articles in each category
+    """
+      # category = req.GET.get("category", None)
+    current_date = datetime.now()
+    print(current_date)
+
+
+    return jsonify({},status_code=200)
     
 
 @csrf_exempt
