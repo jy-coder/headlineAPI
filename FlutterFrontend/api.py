@@ -129,7 +129,7 @@ def articles(req):
 
     if user:
         bookmarks_id_list = list(Bookmark.objects.filter(user=user).values_list("article__article_id",flat=True))
-        articles = articles.exclude(article_id__in=bookmarks_id_list)
+        articles = articles.exclude(article_id__in=bookmarks_id_list) # exclude bookmark
       
 
     articles = articles.order_by("-publication_date")[start:end].annotate(id=F('article_id'))
@@ -142,35 +142,104 @@ def articles(req):
 @csrf_exempt
 @require_http_methods(["GET"])
 def article(req):
-    # localhost:8000/article/?article_id=15&category=world
+    email = "test3@test.com"
+    user = retrieve_user(email)
+    
+    # localhost:8000/article/?article_id=15&category=world&tabName=all_articles&swipe=left
+    article = []
+    current_date = (datetime.now()-timedelta(days=1)).strftime("%Y-%m-%d")
     article_id = req.GET.get("article_id", None)
     category = req.GET.get("category", None)
+    tabName = req.GET.get("tabName", None)
+    swipe = req.GET.get("swipe", None)
+    
 
-    if category == "all":
-        article = list(Article.objects.filter(article_id__lt=article_id)\
-            .order_by("-article_id").values())[0]
+    if tabName == "all_articles":
+        if swipe == "right":
+            if category == "all":
+                article = Article.objects.filter(article_id__lt=article_id, publication_date__gte=current_date).order_by("-article_id")
 
-    elif category != "all":
-        article = list(Article.objects.filter(article_id__lt=article_id, category=category)\
-            .order_by("-article_id").values())[0]
+            elif category != "all":
+                article = Article.objects.filter(article_id__lt=article_id, category=category, publication_date__gte=current_date).order_by("-article_id")
+            
 
-    article["id"] = article["article_id"]
-   
+        elif swipe == "left":
+            if category == "all":
+                article = Article.objects.filter(article_id__gt=article_id, publication_date__gte=current_date).order_by("article_id")
+
+            elif category != "all":
+                article = Article.objects.filter(article_id__gt=article_id, category=category, publication_date__gte=current_date).order_by("article_id")
+
+        elif swipe == "same":
+            if category == "all":
+                article = Article.objects.filter(article_id=article_id, publication_date__gte=current_date).order_by("article_id")
+
+            elif category != "all":
+                article = Article.objects.filter(article_id=article_id, category=category, publication_date__gte=current_date).order_by("article_id")
+
+
+
+        # if user:
+        #     bookmarks_id_list = list(Bookmark.objects.filter(user=user).values_list("article__article_id",flat=True)) 
+        #     article = article.exclude(article_id__in=bookmarks_id_list) # exclude bookmark
+
+
+        if article == []:
+            return jsonify({},status_code=200)
+
+        article = list(article.values())[0]
+        article["id"] = article["article_id"]
+
+        # print("there is an error")
+        # article = list(article.values())[0]
+        # article["id"] = article["article_id"]
+
     
     return jsonify(article,status_code=200)
 
 @csrf_exempt
 @require_http_methods(["GET"])
 def category_count(req):
+    # localhost:8000/count/?tabName=all_articles&category=world
+    # localhost:8000/count/?tabName=daily_read
+
     """
-    count number of articles in each category
+    count number of articles in each category of current date
     """
-      # category = req.GET.get("category", None)
-    current_date = datetime.now()
-    print(current_date)
+    email = "test3@test.com"
+    user = retrieve_user(email)
+    tabName = ""
+    articles_count = 0
+
+    current_date =( datetime.now()-timedelta(days=1)).strftime("%Y-%m-%d")
 
 
-    return jsonify({},status_code=200)
+    
+    tabName = req.GET.get("tabName", None)
+    category = req.GET.get("category", "all")
+    if tabName == "all_articles":  
+        if category != "all":
+            articles = Article.objects.filter(category=category, publication_date__lte=current_date)  
+        else:
+            articles = Article.objects.filter(publication_date__gte=current_date)
+    if user:
+        if tabName =="daily_read":  
+            articles= Recommend.objects.filter(user=user)# always be up to date
+            
+        elif tabName == "History":
+            articles = ReadingHistory.objects.filter(user=user) # get all history
+
+        elif tabName == "Saved":
+            articles = Bookmark.objects.filter(user=user) # get all bookmark
+        
+        # bookmarks_id_list = list(Bookmark.objects.filter(user=user).values_list("article__article_id",flat=True))
+        # articles = articles.exclude(article_id__in=bookmarks_id_list) # exclude bookmark
+  
+  
+    articles_count = articles.count()
+
+
+    return jsonify({"count" : articles_count},status_code=200)
     
 
 @csrf_exempt
@@ -187,7 +256,7 @@ def history(req):
 
         page = req.GET.get("page", 1)
         page = int(page)
-        offset = (page - 1) * itemsPerPage + 1
+        offset = (page - 1) * itemsPerPage
         date = req.GET.get("dateRange", None)
        
         #for date filtering
@@ -228,7 +297,10 @@ def history(req):
             article_id = int(article_id)
             article = Article.objects.get(article_id = article_id)
             read_history = ReadingHistory(user=user, article=article)
-            read_history.save()
+            try:
+                read_history.save()
+            except:
+                print("history already saved")
 
     return jsonify({},status_code=200)
 
@@ -247,7 +319,7 @@ def bookmark(req):
 
         page = req.GET.get("page", 1)
         page = int(page)
-        offset = (page - 1) * itemsPerPage + 1
+        offset = (page - 1) * itemsPerPage 
 
         bookmark = Bookmark.objects.filter(user=user).select_related('article').annotate(id=F('article__article_id')\
             ,title=F('article__title'),link=F('article__link'),summary=F('article__summary')\
