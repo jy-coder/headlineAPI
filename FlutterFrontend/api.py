@@ -145,54 +145,35 @@ def article(req):
     email = "test3@test.com"
     user = retrieve_user(email)
     
-    # localhost:8000/article/?article_id=15&category=world&tabName=all_articles&swipe=left
+    # localhost:8000/article/?article_id=46&category=world&tabName=all_articles&index=1
     article = []
-    current_date = (datetime.now()-timedelta(days=1)).strftime("%Y-%m-%d")
+    current_date = (datetime.now()-timedelta(days=14)).strftime("%Y-%m-%d") # change this
     article_id = req.GET.get("article_id", None)
     category = req.GET.get("category", None)
     tabName = req.GET.get("tabName", None)
-    swipe = req.GET.get("swipe", None)
+    ind = req.GET.get("index", None)
+
     
 
-    if tabName == "all_articles":
-        if swipe == "right":
-            if category == "all":
-                article = Article.objects.filter(article_id__lt=article_id, publication_date__gte=current_date).order_by("-article_id")
+    if tabName == "all_articles" and ind:
+        if category == "all":
+            article = Article.objects.filter( publication_date__gte=current_date).order_by("-article_id")
+        
 
-            elif category != "all":
-                article = Article.objects.filter(article_id__lt=article_id, category=category, publication_date__gte=current_date).order_by("-article_id")
+        elif category != "all":
+            article = Article.objects.filter(category=category, publication_date__gte=current_date).order_by("-article_id")
             
-
-        elif swipe == "left":
-            if category == "all":
-                article = Article.objects.filter(article_id__gt=article_id, publication_date__gte=current_date).order_by("article_id")
-
-            elif category != "all":
-                article = Article.objects.filter(article_id__gt=article_id, category=category, publication_date__gte=current_date).order_by("article_id")
-
-        elif swipe == "same":
-            if category == "all":
-                article = Article.objects.filter(article_id=article_id, publication_date__gte=current_date).order_by("article_id")
-
-            elif category != "all":
-                article = Article.objects.filter(article_id=article_id, category=category, publication_date__gte=current_date).order_by("article_id")
-
-
-
         # if user:
         #     bookmarks_id_list = list(Bookmark.objects.filter(user=user).values_list("article__article_id",flat=True)) 
         #     article = article.exclude(article_id__in=bookmarks_id_list) # exclude bookmark
 
 
-        if article == []:
+        if int(ind) <= len(article) - 1:
+            article = list(article.values())[int(ind)]
+            article["id"] = article["article_id"]
+
+        else:
             return jsonify({},status_code=200)
-
-        article = list(article.values())[0]
-        article["id"] = article["article_id"]
-
-        # print("there is an error")
-        # article = list(article.values())[0]
-        # article["id"] = article["article_id"]
 
     
     return jsonify(article,status_code=200)
@@ -211,7 +192,7 @@ def category_count(req):
     tabName = ""
     articles_count = 0
 
-    current_date =( datetime.now()-timedelta(days=1)).strftime("%Y-%m-%d")
+    current_date =( datetime.now()-timedelta(days=5)).strftime("%Y-%m-%d") # change this
 
 
     
