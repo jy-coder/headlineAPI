@@ -1,5 +1,4 @@
 import os
-# django project name is adleads, replace adleads with your project name
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
 import django
 django.setup()
@@ -53,6 +52,7 @@ def extract_info(article_links,category,source):
         article = Article(title=title,link=link,summary=summary,keywords=keywords,category=category,source=source,publication_date=publication_date,description=description,image_url=image_url)
         article.save()
          
+
         print("article successfully saved to database")
         #odd field-item
         # article = {
