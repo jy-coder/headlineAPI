@@ -1,21 +1,26 @@
 from django.urls import path
 from . import api
+from .Controllers import article, category,search, authenticate, subscription, activity
 
 urlpatterns = [
     path("test1", api.test1, name="test"),
-    path("category", api.category, name="category"),
 
-    path("register", api.register, name="register"),
-    path("subscription", api.subscription, name="subscription"),
-    path("user_subscription", api.user_subscription, name="user_subscription"),
+    path("category", category.category, name="category"),
+    path("count/", category.category_count, name="count"),
 
-    path("articles/", api.articles, name="articles"),
-    path("article/", api.article, name="article"),
-    path("history/", api.history, name="history"),
-    path("bookmark/", api.bookmark, name="bookmark"),
-    path("count/", api.category_count, name="count"),
+    path("register", authenticate.register, name="register"),
 
-    path("search_suggestion/", api.search_suggestion, name="search_suggestion"),
-    path("search_result/", api.search_result, name="search_result"),
+    path("articles/", article.articles, name="articles"),
+    path("article/", article.article, name="article"),
+
+    path("subscription", subscription.subscription, name="subscription"),
+    path("user_subscription", subscription.user_subscription, name="user_subscription"),
+
+    path("history/", activity.history, name="history"),
+    path("bookmark/", activity.bookmark, name="bookmark"),
+    
+
+    path("search_suggestion/", search.search_suggestion, name="search_suggestion"),
+    path("search_result/", search.search_result, name="search_result"),
 
 ]
