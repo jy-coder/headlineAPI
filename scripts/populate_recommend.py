@@ -8,13 +8,14 @@ from database.models import *
 from gensim.models.keyedvectors import KeyedVectors
 from datetime import datetime, timedelta
 from django.db.models import F
-model_path = './data/GoogleNews-vectors-negative300.bin'
+model_path = './scripts/utils/GoogleNews-vectors-negative300.bin'
 w2v_model = KeyedVectors.load_word2vec_format(model_path, binary=True)
-from DocSim import DocSim
+from utils.DocSim import DocSim
 ds = DocSim(w2v_model)
 
 
 if __name__ == '__main__':
+
     # get article less than 24 hours ago
     time_gte= datetime.now() - timedelta(days=5)
     today_date = datetime.now().strftime("%Y-%m-%d")

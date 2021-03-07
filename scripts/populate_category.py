@@ -1,5 +1,4 @@
 import os
-# django project name is adleads, replace adleads with your project name
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
 import django
 django.setup()
