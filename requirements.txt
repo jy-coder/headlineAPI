@@ -29,6 +29,7 @@ feedfinder2==0.0.4
 feedparser==6.0.2
 filelock==3.0.12
 firebase-admin==4.5.2
+gensim==3.8.3
 google-api-core==1.26.1
 google-api-python-client==2.0.2
 google-auth==1.27.1
@@ -90,11 +91,13 @@ requests==2.25.1
 requests-file==1.5.1
 rsa==4.7.2
 s3transfer==0.3.4
+scipy==1.6.1
 Scrapy==2.4.1
 selenium==3.141.0
 service-identity==18.1.0
 sgmllib3k==1.0.0
 six==1.15.0
+smart-open==4.2.0
 soupsieve==2.2
 sqlparse==0.4.1
 tinysegmenter==0.3
