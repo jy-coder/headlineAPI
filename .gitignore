@@ -114,6 +114,6 @@ media/
 # **/migrations/**
 # !**/migrations
 # !**/migrations/__init__.py
-
-service.json
+docker-compose.yml
+Dockerfile
 GoogleNews-vectors-negative300.bin

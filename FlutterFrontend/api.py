@@ -3,7 +3,6 @@ from django.views.decorators.http import require_http_methods
 from database.models import *
 from firebase_admin import auth
 from .utils import *
-from .Utils.subscription import *
 from django.http import HttpResponse
 from django.db.models import F
 from datetime import datetime, timedelta
