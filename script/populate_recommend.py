@@ -1,6 +1,7 @@
 # https://github.com/v1shwa/document-similarity
-
+import sys
 import os
+sys.path.append(os.getcwd())
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
 import django
 django.setup()
@@ -8,7 +9,7 @@ from database.models import *
 from gensim.models.keyedvectors import KeyedVectors
 from datetime import datetime, timedelta
 from django.db.models import F
-model_path = './scripts/utils/GoogleNews-vectors-negative300.bin'
+model_path = './script/utils/GoogleNews-vectors-negative300.bin'
 w2v_model = KeyedVectors.load_word2vec_format(model_path, binary=True)
 from utils.DocSim import DocSim
 ds = DocSim(w2v_model)

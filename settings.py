@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'FlutterFrontend',
     'firebase_admin',
     'corsheaders',
+    'script',
 ]
 
 MIDDLEWARE = [
