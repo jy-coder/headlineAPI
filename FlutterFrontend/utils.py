@@ -12,12 +12,20 @@ def initialize_firebase():
     cred = credentials.Certificate(FIREBASE_SERVICE)
     auth = firebase_admin.initialize_app(cred)
 
+def retrieve_user(email):
+	try:
+		user = User.objects.get(email=email)
+		return user
+	except:
+		return None
 
 def authenticate(req):
 	try:
-		id_token = req.headers.get("X-Id-Token", "")
-		# print(id_token)
-		return auth.verify_id_token(id_token)
+		id_token = req.META.get("HTTP_X_ID_TOKEN", None)
+		user = auth.verify_id_token(id_token)
+		email = user['email']
+		user = retrieve_user(email)
+		return user
 	except:
 		return None
 
@@ -29,13 +37,8 @@ def parse_json(req):
 	return json.loads(req.body)
 
 
-
-def jsonify(obj, status_code):
+def jsonify(obj, status_code=None):
 	return HttpResponse(json.dumps(obj, indent=4, sort_keys=True, default=str),status=status_code,content_type="application/json")
 
-def retrieve_user(email):
-	user = User.objects.get(email=email)
-	# print(user)
-	return user
 
 

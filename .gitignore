@@ -117,3 +117,4 @@ media/
 docker-compose.yml
 Dockerfile
 GoogleNews-vectors-negative300.bin
+populate_article.py

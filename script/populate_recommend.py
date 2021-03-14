@@ -9,6 +9,8 @@ from database.models import *
 from gensim.models.keyedvectors import KeyedVectors
 from datetime import datetime, timedelta
 from django.db.models import F
+# import gensim.downloader as api
+# model_path = api.load("word2vec-google-news-300", return_path=True)
 model_path = './script/utils/GoogleNews-vectors-negative300.bin'
 w2v_model = KeyedVectors.load_word2vec_format(model_path, binary=True)
 from utils.DocSim import DocSim

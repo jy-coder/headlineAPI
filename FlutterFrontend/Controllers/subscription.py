@@ -27,11 +27,9 @@ def save_subscription(records, user):
 def get_subscription(user):
 	records = []
 	subscription = Subscription.objects.filter(user=user)
-	# print(subscription)
 	category_id_list = list(subscription.values_list("category",flat=True))
-	# print(category_id_list)
 	categories = list(Category.objects.values())
-	# print(categories)
+
 	for category in categories:
 		category_id = category["category_id"]
 
@@ -41,8 +39,6 @@ def get_subscription(user):
 			category["checked"] = False
 
 		records.append(category)
-		# print(records)
-	
 
 	return records 
 
@@ -51,12 +47,10 @@ def get_subscription(user):
 @require_http_methods(["POST","GET"])
 def subscription(req):
     user = authenticate(req)
-    email = user["email"]
-    user = retrieve_user(email)
+
 
     if(req.method == "POST"):
         data = parse_json(req)
-        # print(data);
         save_subscription(data, user)
         return jsonify({},status_code=200)
 
@@ -69,13 +63,12 @@ def subscription(req):
 @csrf_exempt
 @require_http_methods(["GET"])
 def user_subscription(req):
-    # user = authenticate(req)
-    # email = user["email"]
-    email = "test3@test.com"
-    user = retrieve_user(email)
+    user = authenticate(req)
+    if not user:
+        return jsonify([], status_code=401)
+
     subscriptions = Subscription.objects.filter(user=user).select_related("category").values("category__category_name").annotate(category_name=F('category__category_name'))
 
-   
     # include 'all' category
     all_dict = {}
     find_all = Category.objects.filter(category_name="all").first()
@@ -85,7 +78,7 @@ def user_subscription(req):
 
     subscriptions = list(subscriptions.values("category_name","category_id"))
 
-    if(len(subscriptions) != 0):
+    if(subscriptions != []):
         subscriptions.insert(0,all_dict)
 
     return jsonify(subscriptions,status_code=200)
