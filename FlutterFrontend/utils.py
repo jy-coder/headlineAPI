@@ -21,7 +21,7 @@ def retrieve_user(email):
 
 def authenticate(req):
 	try:
-		id_token = req.META.get("HTTP_X_ID_TOKEN", None)
+		id_token = req.headers.get("X-Id-Token", "")
 		user = auth.verify_id_token(id_token)
 		email = user['email']
 		user = retrieve_user(email)
