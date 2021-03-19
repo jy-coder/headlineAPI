@@ -20,14 +20,21 @@ def retrieve_user(email):
 		return None
 
 def authenticate(req):
-	try:
-		id_token = req.headers.get("X-Id-Token", "")
+	id_token = req.headers.get("X-Id-Token", None)
+
+	if id_token:
 		user = auth.verify_id_token(id_token)
-		email = user['email']
-		user = retrieve_user(email)
-		return user
-	except:
+	else:
 		return None
+
+	found_in_local = retrieve_user(user["email"])
+
+	if found_in_local == None:
+		return user
+	else:
+		return found_in_local
+	
+
 
 def error(message,status_code):
 	return HttpResponse({"error": message},status=status_code,content_type="application/json")

@@ -76,7 +76,7 @@ def bookmark(req):
     user = authenticate(req)
 
     if not user:
-        return jsonify({})
+        return jsonify([])
         
     if(req.method == "GET"):
         bookmark = Bookmark.objects.filter(user=user).select_related('article').annotate(id=F('article__article_id')\
@@ -108,4 +108,4 @@ def bookmark(req):
 
 
 
-    return jsonify({},status_code=200)
+    return jsonify([],status_code=200)

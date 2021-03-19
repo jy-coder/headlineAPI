@@ -64,7 +64,8 @@ def subscription(req):
 @require_http_methods(["GET"])
 def user_subscription(req):
     user = authenticate(req)
-    if not user:
+    
+    if user == None:
         return jsonify([], status_code=401)
 
     subscriptions = Subscription.objects.filter(user=user).select_related("category").values("category__category_name").annotate(category_name=F('category__category_name'))
