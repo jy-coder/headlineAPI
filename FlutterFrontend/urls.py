@@ -19,8 +19,8 @@ urlpatterns = [
     path("history/", activity.history, name="history"),
     path("bookmark/", activity.bookmark, name="bookmark"),
     
-
     path("search_suggestion/", search.search_suggestion, name="search_suggestion"),
     path("search_result/", search.search_result, name="search_result"),
 
+    path("trend/", search.trend, name="trend")
 ]
