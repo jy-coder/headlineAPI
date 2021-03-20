@@ -13,11 +13,10 @@ from django.forms.models import model_to_dict
 @require_http_methods(["GET"])
 def articles(req):
     user = authenticate(req)
-
-
+    
     page_type = req.GET.get("type", "all_articles")
     category= req.GET.get("category", "all")
-    # add today's date / ytd's date later
+  
     # localhost:8000/article/?type=all_articles
     if page_type == "all_articles":
         if category == "all":
@@ -44,17 +43,6 @@ def articles(req):
             "summary", "description", "image_url", 
             "category", "source", "publication_date", "date")
    
-
-
-    if user != None:
-        bookmarks_id_list = list(Bookmark.objects.filter(user_id=user["user_id"]).values_list("article__article_id",flat=True))
-        articles = articles.exclude(article_id__in=bookmarks_id_list) # exclude bookmark
-      
-    # if(articles != []):
-    #     articles = articles.order_by("-publication_date").annotate(id=F('article_id'))
-    #     articles = list(articles.values())
-  
-  
     return jsonify(list(articles.values())[:50],status_code=200)
 
 
@@ -72,12 +60,19 @@ def article(req):
     ind = req.GET.get("index", None)
 
     
+    if ind:
+        if tabName == "all_articles" :
+            model_obj = Article.objects
+        elif tabName == "reading_list":
+            model_obj = Bookmark.objects
+        elif tabName == "daily_read":
+            model_obj = Recommend.objects
+    
 
-    if tabName == "all_articles" and ind:
         if category == "all":
-            article = Article.objects.filter( publication_date__gte=current_date).order_by("-article_id")
+            article = model_obj.filter( publication_date__gte=current_date).order_by("-article_id")
         elif category != "all":
-            article = Article.objects.filter(category=category, publication_date__gte=current_date).order_by("-article_id")
+            article = model_obj.filter(category=category, publication_date__gte=current_date).order_by("-article_id")
 
         if int(ind) <= len(article) - 1:
             article = list(article.values())[int(ind)]
@@ -86,32 +81,5 @@ def article(req):
         else:
             return jsonify({},status_code=200)
 
-
-    elif tabName == "reading_list" and ind:
-        if category == "all":
-            article = Bookmark.objects.filter(user_id=user["user_id"]).order_by("-article_id")
-        elif category != "all":
-            article = Bookmark.objects.filter(user_id=user["user_id"]).order_by("-article_id")
-
-        if int(ind) <= len(article) - 1:
-            article = list(article.values())[int(ind)]
-            article["id"] = article["article_id"]
-
-        else:
-            return jsonify({},status_code=200)
-
-
-    elif tabName == "daily_read" and ind:
-        if category == "all":
-            article = Recommend.objects.filter( user_id=user["user_id"]).order_by("-article_id")
-        elif category != "all":
-            article = Recommend.objects.filter(category=category,user_id=user["user_id"]).order_by("-article_id")
-
-        if int(ind) <= len(article) - 1:
-            article = list(article.values())[int(ind)]
-            article["id"] = article["article_id"]
-
-        else:
-            return jsonify({},status_code=200)
     
     return jsonify(article,status_code=200)

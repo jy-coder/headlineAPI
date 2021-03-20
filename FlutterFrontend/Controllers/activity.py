@@ -13,9 +13,7 @@ from django.forms.models import model_to_dict
 def history(req):
     user = authenticate(req)
     history = []
- 
-    # else:
-    #     return jsonify({})
+
 
     date = req.GET.get("date", None)
     if(req.method == "GET"):

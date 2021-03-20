@@ -13,7 +13,6 @@ from django.forms.models import model_to_dict
 @require_http_methods(["POST"])
 def register(req):
     user = authenticate(req)
-    print(user)
     save_user = User(uuid=user["uid"],email=user["email"])
     save_user.save()
     return HttpResponse(status=201)

@@ -47,7 +47,8 @@ def get_subscription(user):
 @require_http_methods(["POST","GET"])
 def subscription(req):
     user = authenticate(req)
-
+    if user == None:
+        return jsonify([], status_code=401)
 
     if(req.method == "POST"):
         data = parse_json(req)
@@ -64,13 +65,11 @@ def subscription(req):
 @require_http_methods(["GET"])
 def user_subscription(req):
     user = authenticate(req)
-    # print(user)
-
-    subscriptions = []
     
     if user == None:
         return jsonify([], status_code=401)
-
+        
+    subscriptions = []
     subscriptions = Subscription.objects.filter(user_id=user["user_id"]).select_related("category").values("category__category_name").annotate(category_name=F('category__category_name'))
 
     # include 'all' category

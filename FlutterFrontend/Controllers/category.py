@@ -22,35 +22,23 @@ def category_count(req):
     articles_count = 0
     articles = []
 
-    # current_date =( datetime.now()-timedelta(days=5)).strftime("%Y-%m-%d") # change this
-
     tabName = req.GET.get("tabName", None)
     category = req.GET.get("category", "all")
     if tabName == "all_articles":  
         if category != "all":
-            # articles = Article.objects.filter(category=category, publication_date__gte=current_date)  
             articles = Article.objects.filter(category=category)  
         else:
-            # articles = Article.objects.filter(publication_date__gte=current_date)
             articles = Article.objects.all()
   
 
     elif user and tabName != "all_articles":
         if tabName =="daily_read":  
             articles= Recommend.objects.filter(user_id=user["user_id"])# always be up to date
-            
         elif tabName == "History":
             articles = ReadingHistory.objects.filter(user_id=user["user_id"])
-        
-           
-
         elif tabName == "Saved":
             articles = Bookmark.objects.filter(user_id=user["user_id"]) # get all bookmark
-        
-        # bookmarks_id_list = list(Bookmark.objects.filter(user_id=user["user_id"]).values_list("article__article_id",flat=True))
-        # articles = articles.exclude(article_id__in=bookmarks_id_list) # exclude bookmark
-  
-    # print(articles)
+ 
     articles_count = len(articles)
 
     return jsonify({"count" : articles_count},status_code=200)
