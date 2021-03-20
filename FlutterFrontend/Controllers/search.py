@@ -39,7 +39,8 @@ def search_result(req):
 @require_http_methods(["GET"])
 def trend(req):
     # localhost:8000/trend
-    articles= ReadingHistory.objects.values("article_id").annotate(dcount=Count('article_id')).order_by('-dcount')
-    articles = list(articles)[0:5]
+    trend_articles_id = ReadingHistory.objects.values("article_id").annotate(dcount=Count('article_id')).order_by('-dcount').values_list('article_id', flat=True)[:5]
+    articles = Article.objects.filter(article_id__in=trend_articles_id)
+    articles = list(articles.values())
 
     return jsonify(articles,status_code=200)
