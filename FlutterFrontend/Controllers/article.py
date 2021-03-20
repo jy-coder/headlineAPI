@@ -13,8 +13,8 @@ from django.forms.models import model_to_dict
 @require_http_methods(["GET"])
 def articles(req):
     user = authenticate(req)
-    # email = "test@test.com"
-    # user = retrieve_user(email)
+
+
     page_type = req.GET.get("type", "all_articles")
     category= req.GET.get("category", "all")
     # add today's date / ytd's date later
@@ -27,7 +27,7 @@ def articles(req):
       
     elif page_type == "daily_read":
         if category == "all":
-                articles = Recommend.objects.filter(user=user).select_related('article')\
+                articles = Recommend.objects.filter(user_id=user["user_id"]).select_related('article')\
                 .annotate(id=F('article__article_id'),title=F('article__title'),link=F('article__link'),summary=F('article__summary')\
                 ,description=F('article__description'),image_url=F('article__image_url'),\
                 category=F('article__category'),source=F('article__source'), publication_date=F('article__publication_date'), date=F('article__date')\
@@ -36,7 +36,7 @@ def articles(req):
             "category", "source", "publication_date", "date")
 
         else:
-            articles = Recommend.objects.filter(user=user).select_related('article').filter(article__category=category)\
+            articles = Recommend.objects.filter(user_id=user["user_id"]).select_related('article').filter(article__category=category)\
                     .annotate(id=F('article__article_id'),title=F('article__title'),link=F('article__link'),summary=F('article__summary')\
                     ,description=F('article__description'),image_url=F('article__image_url'),\
                     category=F('article__category'),source=F('article__source'), publication_date=F('article__publication_date'), date=F('article__date')\
@@ -46,8 +46,8 @@ def articles(req):
    
 
 
-    if user:
-        bookmarks_id_list = list(Bookmark.objects.filter(user=user).values_list("article__article_id",flat=True))
+    if user != None:
+        bookmarks_id_list = list(Bookmark.objects.filter(user_id=user["user_id"]).values_list("article__article_id",flat=True))
         articles = articles.exclude(article_id__in=bookmarks_id_list) # exclude bookmark
       
     # if(articles != []):
@@ -62,9 +62,7 @@ def articles(req):
 @require_http_methods(["GET"])
 def article(req):
     user = authenticate(req)
-
-    # email = "test@test.com"
-    # user = retrieve_user(email)
+    
     # localhost:8000/article/?article_id=46&category=world&tabName=all_articles&index=1
     article = {}
     current_date = (datetime.now()-timedelta(days=14)).strftime("%Y-%m-%d") # change this
@@ -89,11 +87,11 @@ def article(req):
             return jsonify({},status_code=200)
 
 
-    if tabName == "reading_list" and ind:
+    elif tabName == "reading_list" and ind:
         if category == "all":
-            article = Bookmark.objects.filter( user=user).order_by("-article_id")
+            article = Bookmark.objects.filter(user_id=user["user_id"]).order_by("-article_id")
         elif category != "all":
-            article = Bookmark.objects.filter(category=category,user=user).order_by("-article_id")
+            article = Bookmark.objects.filter(user_id=user["user_id"]).order_by("-article_id")
 
         if int(ind) <= len(article) - 1:
             article = list(article.values())[int(ind)]
@@ -103,11 +101,11 @@ def article(req):
             return jsonify({},status_code=200)
 
 
-    if tabName == "daily_read" and ind:
+    elif tabName == "daily_read" and ind:
         if category == "all":
-            article = Recommend.objects.filter( user=user).order_by("-article_id")
+            article = Recommend.objects.filter( user_id=user["user_id"]).order_by("-article_id")
         elif category != "all":
-            article = Recommend.objects.filter(category=category,user=user).order_by("-article_id")
+            article = Recommend.objects.filter(category=category,user_id=user["user_id"]).order_by("-article_id")
 
         if int(ind) <= len(article) - 1:
             article = list(article.values())[int(ind)]
@@ -115,6 +113,5 @@ def article(req):
 
         else:
             return jsonify({},status_code=200)
-
     
     return jsonify(article,status_code=200)

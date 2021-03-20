@@ -15,19 +15,21 @@ def initialize_firebase():
 def retrieve_user(email):
 	try:
 		user = User.objects.get(email=email)
+		user = model_to_dict(user)
 		return user
 	except:
 		return None
 
 def authenticate(req):
-	id_token = req.headers.get("X-Id-Token", None)
+	id_token = req.headers.get("X-Id-Token", "")
 
 	if id_token:
 		user = auth.verify_id_token(id_token)
 	else:
 		return None
 
-	found_in_local = retrieve_user(user["email"])
+	if user != None:
+		found_in_local = retrieve_user(user["email"])
 
 	if found_in_local == None:
 		return user

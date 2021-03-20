@@ -12,6 +12,7 @@ from django.forms.models import model_to_dict
 @require_http_methods(["GET","POST"])
 def history(req):
     user = authenticate(req)
+    history = []
  
     # else:
     #     return jsonify({})
@@ -21,7 +22,7 @@ def history(req):
        
         # for date filtering
         # if not date:
-        #     history = ReadingHistory.objects.filter(user=user)
+        #     history = ReadingHistory.objects.filter(user_id=user["user_id"])
 
         # elif date:
         #     set_date_gt = datetime.now()
@@ -36,12 +37,13 @@ def history(req):
         #         set_date_gt= datetime.now()-timedelta(days=14)
 
 
-            # history = ReadingHistory.objects.filter(user=user,history_date__gte=set_date_gt.strftime("%Y-%m-%d"))
+            # history = ReadingHistory.objects.filter(user_id=user["user_id"],history_date__gte=set_date_gt.strftime("%Y-%m-%d"))
 
-        history = ReadingHistory.objects.filter(user=user)  
+    
+        # print(history)
  
 
-        history = ReadingHistory.objects.select_related('article')\
+        history = ReadingHistory.objects.filter(user_id=user["user_id"]).select_related('article')\
                 .annotate(id=F('article__article_id'),title=F('article__title'),link=F('article__link'),summary=F('article__summary')\
                 ,description=F('article__description'),image_url=F('article__image_url'),\
                 category=F('article__category'),source=F('article__source'), publication_date=F('article__publication_date'), date=F('article__date')\
@@ -60,7 +62,7 @@ def history(req):
         if article_id:
             article_id = int(article_id)
             article = Article.objects.get(article_id = article_id)
-            read_history = ReadingHistory(user=user, article=article)
+            read_history = ReadingHistory(user_id=user["user_id"], article=article)
             try:
                 read_history.save()
             except:
@@ -79,7 +81,7 @@ def bookmark(req):
         return jsonify([])
         
     if(req.method == "GET"):
-        bookmark = Bookmark.objects.filter(user=user).select_related('article').annotate(id=F('article__article_id')\
+        bookmark = Bookmark.objects.filter(user_id=user["user_id"]).select_related('article').annotate(id=F('article__article_id')\
             ,title=F('article__title'),link=F('article__link'),summary=F('article__summary')\
                     ,description=F('article__description'),image_url=F('article__image_url'),\
                     category=F('article__category'),source=F('article__source'), publication_date=F('article__publication_date'), date=F('article__date')\
@@ -94,7 +96,7 @@ def bookmark(req):
         if article_id:
             article_id = int(article_id)
             article = Article.objects.get(article_id = article_id)
-            bookmark = Bookmark(user=user, article=article)
+            bookmark = Bookmark(user_id=user["user_id"], article=article)
             bookmark.save()
 
     #localhost:8000/bookmark/?article_id=1
@@ -103,7 +105,7 @@ def bookmark(req):
         if article_id:
             article_id = int(article_id)
             article = Article.objects.get(article_id = article_id)
-            bookmark = Bookmark.objects.filter(article=article, user=user)
+            bookmark = Bookmark.objects.filter(article=article, user_id=user["user_id"])
             bookmark.delete()
 
 

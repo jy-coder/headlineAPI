@@ -35,17 +35,19 @@ def category_count(req):
             articles = Article.objects.all()
   
 
-    if user:
+    elif user and tabName != "all_articles":
         if tabName =="daily_read":  
-            articles= Recommend.objects.filter(user=user)# always be up to date
+            articles= Recommend.objects.filter(user_id=user["user_id"])# always be up to date
             
         elif tabName == "History":
-            articles = ReadingHistory.objects.filter(user=user) # get all history
+            articles = ReadingHistory.objects.filter(user_id=user["user_id"])
+        
+           
 
         elif tabName == "Saved":
-            articles = Bookmark.objects.filter(user=user) # get all bookmark
+            articles = Bookmark.objects.filter(user_id=user["user_id"]) # get all bookmark
         
-        # bookmarks_id_list = list(Bookmark.objects.filter(user=user).values_list("article__article_id",flat=True))
+        # bookmarks_id_list = list(Bookmark.objects.filter(user_id=user["user_id"]).values_list("article__article_id",flat=True))
         # articles = articles.exclude(article_id__in=bookmarks_id_list) # exclude bookmark
   
     # print(articles)
