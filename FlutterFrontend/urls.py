@@ -6,12 +6,15 @@ urlpatterns = [
     path("test1", api.test1, name="test"),
 
     path("category", category.category, name="category"),
-    path("count/", category.category_count, name="count"),
+    path("count/",article.count, name="count"),
 
     path("register", authenticate.register, name="register"),
 
     path("articles/", article.articles, name="articles"),
     path("article/", article.article, name="article"),
+
+    path("recommend/", article.recommend, name="recommend"),
+    path("trend/", article.trend, name="trend"),
 
     path("subscription", subscription.subscription, name="subscription"),
     path("user_subscription", subscription.user_subscription, name="user_subscription"),
@@ -22,5 +25,4 @@ urlpatterns = [
     path("search_suggestion/", search.search_suggestion, name="search_suggestion"),
     path("search_result/", search.search_result, name="search_result"),
 
-    path("trend/", search.trend, name="trend")
 ]

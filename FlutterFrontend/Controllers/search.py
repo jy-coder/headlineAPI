@@ -33,14 +33,3 @@ def search_result(req):
     articles = Article.objects.order_by("-publication_date").filter(title__contains=search)[:10]
     articles = list(articles.values())
     return jsonify(articles,status_code=200)
-
-
-@csrf_exempt
-@require_http_methods(["GET"])
-def trend(req):
-    # localhost:8000/trend
-    trend_articles_id = ReadingHistory.objects.values("article_id").annotate(dcount=Count('article_id')).order_by('-dcount').values_list('article_id', flat=True)[:5]
-    articles = Article.objects.filter(article_id__in=trend_articles_id)
-    articles = list(articles.values())
-
-    return jsonify(articles,status_code=200)
