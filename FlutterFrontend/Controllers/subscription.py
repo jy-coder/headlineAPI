@@ -13,20 +13,20 @@ def save_subscription(records, user):
 	for k,v in records.items():
 		category = Category.objects.get(category_id =k)
 
-		subscription = Subscription.objects.filter(user=user,category=category)
+		subscription = Subscription.objects.filter(user_id=user["user_id"],category=category)
         
 		if v and not subscription:
-			subscription = Subscription(user=user, category=category)
+			subscription = Subscription(user_id=user["user_id"], category=category)
 			subscription.save()
 
 		elif not v and subscription:
-			subscription = Subscription.objects.get(user=user,category=category)
+			subscription = Subscription.objects.get(user_id=user["user_id"],category=category)
 			subscription.delete()
 
 
 def get_subscription(user):
 	records = []
-	subscription = Subscription.objects.filter(user=user)
+	subscription = Subscription.objects.filter(user_id=user["user_id"])
 	category_id_list = list(subscription.values_list("category",flat=True))
 	categories = list(Category.objects.values())
 
@@ -47,7 +47,8 @@ def get_subscription(user):
 @require_http_methods(["POST","GET"])
 def subscription(req):
     user = authenticate(req)
-
+    if user == None:
+        return jsonify([], status_code=401)
 
     if(req.method == "POST"):
         data = parse_json(req)
@@ -64,10 +65,12 @@ def subscription(req):
 @require_http_methods(["GET"])
 def user_subscription(req):
     user = authenticate(req)
-    if not user:
+    
+    if user == None:
         return jsonify([], status_code=401)
-
-    subscriptions = Subscription.objects.filter(user=user).select_related("category").values("category__category_name").annotate(category_name=F('category__category_name'))
+        
+    subscriptions = []
+    subscriptions = Subscription.objects.filter(user_id=user["user_id"]).select_related("category").values("category__category_name").annotate(category_name=F('category__category_name'))
 
     # include 'all' category
     all_dict = {}

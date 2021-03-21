@@ -7,6 +7,8 @@ from django.http import HttpResponse
 from django.db.models import F
 from datetime import datetime, timedelta
 from django.forms.models import model_to_dict
+from django.db.models import Count
+from django.db.models import Max
 
 
 @csrf_exempt
@@ -17,7 +19,6 @@ def search_suggestion(req):
     articles = Article.objects.order_by("-publication_date").filter(title__contains=search)[:5]
     articles = list(articles.values("article_id","title"))
     return jsonify(articles,status_code=200)
-
 
 
 @csrf_exempt

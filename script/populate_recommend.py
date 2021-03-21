@@ -58,7 +58,7 @@ if __name__ == '__main__':
             for recommend_article_id in recommend_article_id_list:
                 article = Article.objects.get(article_id=recommend_article_id)
                 try:
-                    recommend = Recommend(user=user,article=article)
+                    recommend = Recommend(user_id=user["user_id"],article=article)
                     recommend.save()
                     print(f"Article ID :{recommend_article_id} recommend to User ID:{user_id}")
                     print("===========================================================================")
