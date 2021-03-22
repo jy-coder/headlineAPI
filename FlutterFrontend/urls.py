@@ -25,4 +25,7 @@ urlpatterns = [
     path("search_suggestion/", search.search_suggestion, name="search_suggestion"),
     path("search_result/", search.search_result, name="search_result"),
 
+
+    path("bookmark_article_ids/", activity.bookmark_article_ids , name="bookmark_article_ids"),
+
 ]
