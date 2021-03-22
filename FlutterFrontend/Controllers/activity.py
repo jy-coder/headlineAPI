@@ -109,13 +109,12 @@ def bookmark(req):
     return jsonify([],status_code=200)
 
 
-
 @csrf_exempt
 @require_http_methods(["GET"])
 def bookmark_article_ids(req):
     # localhost:8000/bookmark_article_ids
     user = authenticate(req)
-    article_ids = list(Bookmark.objects.filter(user_id=2).select_related('article').\
+    article_ids = list(Bookmark.objects.filter(user_id=user["user_id"]).select_related('article').\
         annotate(id=F('article__article_id')).values_list("id", flat=True))
 
     return jsonify({"data": article_ids},status_code=200)
