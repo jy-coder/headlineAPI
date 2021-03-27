@@ -20,7 +20,7 @@ ds = DocSim(w2v_model)
 if __name__ == '__main__':
 
     # get article less than 24 hours ago
-    time_gte= datetime.now() - timedelta(days=5)
+    time_gte= datetime.now() - timedelta(days=1)
     today_date = datetime.now().strftime("%Y-%m-%d")
 
     user_id_list = list(User.objects.values_list("user_id",flat=True))
