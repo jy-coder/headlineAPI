@@ -59,7 +59,6 @@ class Bookmark(models.Model):
     bookmark_id = models.AutoField(primary_key=True, unique=True)
     article = models.ForeignKey(Article,on_delete=models.CASCADE)
     user = models.ForeignKey(User,on_delete=models.CASCADE)
-
     class Meta:
         db_table = "Bookmark"
         unique_together = (('user', 'article'),)
@@ -89,7 +88,8 @@ class Trend(models.Model):
         db_table = "Trend"
 
 class RelatedArticle(models.Model):
-    article_id = models.AutoField(primary_key=True, unique=True)
+    related_id = models.AutoField(primary_key=True, unique=True)
+    article = models.ForeignKey(Article,on_delete=models.CASCADE)
     title = models.CharField(max_length=1000, blank=True)
     link = models.CharField(max_length=1000, blank=True)
     summary = models.CharField(max_length=3000, blank=True)
@@ -103,4 +103,10 @@ class RelatedArticle(models.Model):
     class Meta:
         db_table = "RelatedArticle"
 
-
+class NotInterested(models.Model):
+    ni_id = models.AutoField(primary_key=True, unique=True)
+    article = models.ForeignKey(Article,on_delete=models.CASCADE)
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    class Meta:
+        db_table = "NotInterested"
+        unique_together = (('user', 'article'),)
