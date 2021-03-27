@@ -30,6 +30,6 @@ def search_result(req):
     if(search == ""):
         return jsonify([],status_code=200)
 
-    articles = Article.objects.order_by("-publication_date").filter(title__contains=search)[:10]
+    articles = Article.objects.order_by("-publication_date").annotate(id=F('article_id')).filter(title__contains=search)[:10]
     articles = list(articles.values())
     return jsonify(articles,status_code=200)

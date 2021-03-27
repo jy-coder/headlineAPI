@@ -47,7 +47,7 @@ def history(req):
                 category=F('article__category'),source=F('article__source'), publication_date=F('article__publication_date'), date=F('article__date')\
         ).values("id","title", "link", 
         "summary", "description", "image_url", 
-        "category", "source", "publication_date", "date","history_date").order_by("-publication_date")
+        "category", "source", "publication_date", "date","history_date").order_by("-history_date")
 
 
         return jsonify(list(history),status_code=200)
@@ -59,13 +59,15 @@ def history(req):
 
         if article_id:
             article_id = int(article_id)
-            article = Article.objects.get(article_id = article_id)
-            read_history = ReadingHistory(user_id=user["user_id"], article=article)
-            try:
-                read_history.save()
-            except:
-                print("history already saved")
-
+            history = list(ReadingHistory.objects.filter(user_id=user["user_id"], article_id=article_id))
+            if history != []:
+               history = ReadingHistory.objects.get(user_id=user["user_id"], article_id=article_id)
+               history.history_date = datetime.now()
+              
+            else:
+                history = ReadingHistory(user_id=user["user_id"], article_id=article_id)
+            
+            history.save()
     return jsonify({},status_code=200)
 
 
