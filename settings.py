@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'FlutterFrontend',
     'firebase_admin',
     'corsheaders',
+    'channels',
+    'websocket',
 ]
 
 MIDDLEWARE = [
@@ -50,6 +52,18 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'urls'
+
+CHANNEL_LAYERS = {
+    "default": {
+         "BACKEND": "channels.layers.InMemoryChannelLayer"
+    #     'BACKEND': 'channels_redis.core.RedisChannelLayer',
+    #     'CONFIG': {
+    #         "hosts": [
+    #           'redis://h:4xCsr1S8wuCsaPt0dgFdJ06EGPsAnJso;@redis-12894.c256.us-east-1-2.ec2.cloud.redislabs.com:12894' 
+    #         ],
+    #     },
+    # },
+}}
 
 # TEMPLATES = [
 #     {
@@ -67,9 +81,8 @@ ROOT_URLCONF = 'urls'
 #     },
 # ]
 
-WSGI_APPLICATION = 'wsgi.application'
-
-
+# WSGI_APPLICATION = 'wsgi.application'
+ASGI_APPLICATION = "asgi.application"
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
@@ -79,6 +92,8 @@ DATABASES = {
         'NAME':os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+
+
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators

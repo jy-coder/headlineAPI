@@ -16,3 +16,17 @@ def register(req):
     save_user = User(uuid=user["uid"],email=user["email"])
     save_user.save()
     return HttpResponse(status=201)
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def last_active(req):
+    user = authenticate(req)
+    user = User.objects.get(user_id=user["user_id"])
+    user.last_active =  datetime.now()
+    user.save()
+
+    return HttpResponse(status=201)
+
+
+

@@ -1,6 +1,6 @@
 from django.urls import path
 from . import api
-from .Controllers import article, category,search, authenticate, subscription, activity
+from .Controllers import article, category,search, user, subscription, activity
 
 urlpatterns = [
     path("test1", api.test1, name="test"),
@@ -8,7 +8,8 @@ urlpatterns = [
     path("category", category.category, name="category"),
     path("count/",article.count, name="count"),
 
-    path("register", authenticate.register, name="register"),
+    path("register", user.register, name="register"),
+    path("last_active", user.last_active, name="last_active"),
 
     path("articles/", article.articles, name="articles"),
     path("article/", article.article, name="article"),
