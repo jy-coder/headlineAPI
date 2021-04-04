@@ -16,7 +16,7 @@ class User(models.Model):
 class Article(models.Model):
     article_id = models.AutoField(primary_key=True, unique=True)
     title = models.CharField(max_length=1000, blank=True)
-    link = models.CharField(max_length=1000, blank=True)
+    link = models.CharField(max_length=1000, blank=True, unique=True)
     summary = models.CharField(max_length=3000, blank=True)
     description = models.TextField( blank=True)
     image_url = models.TextField( blank=True)
@@ -28,7 +28,6 @@ class Article(models.Model):
 
     class Meta:
         db_table = "Article"
-
 
 class Category(models.Model):
     category_id = models.AutoField(primary_key=True, unique=True)
@@ -68,6 +67,9 @@ class Recommend(models.Model):
     article = models.ForeignKey(Article,on_delete=models.CASCADE)
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     recommend_date = models.DateTimeField(auto_now_add=True, blank=True)
+    similar_headline = models.CharField(max_length=1000, blank=True)
+    similarity = models.IntegerField(default=0, blank=True)
+    history = models.ForeignKey(Article,on_delete=models.CASCADE,null=True,related_name="history")
     class Meta:
         db_table = "Recommend"
         unique_together = (('user', 'article'),)

@@ -17,5 +17,5 @@ Including another URLconf
 from django.urls import path, include
 
 urlpatterns = [
-    path('', include("FlutterFrontend.urls"))
+    path('', include("FlutterFrontend.urls")),
 ]
