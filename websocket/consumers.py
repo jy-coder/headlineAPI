@@ -7,9 +7,6 @@ from websocket.recommend import update_recommend
 @sync_to_async
 def update_user_recommendation(email):
     update_recommend(email)
-    # users = User.objects.filter(email=email)
-    # print(users)
-    # return users
 
 class IndexConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
