@@ -1,8 +1,8 @@
 
-from channels.http import AsgiHandler
 from channels.routing import ProtocolTypeRouter, URLRouter
 from django.urls import path, include
 from websocket.routing import ws_urlpatterns
+
 import os
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings')
 

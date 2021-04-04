@@ -1,8 +1,8 @@
-from django.urls import path
+from django.urls import path,include
 from django.conf.urls import url
 
 from .consumers import IndexConsumer
 
 ws_urlpatterns = [
-    path('ws/status/',IndexConsumer.as_asgi())
+    path('ws',IndexConsumer.as_asgi()),
 ]

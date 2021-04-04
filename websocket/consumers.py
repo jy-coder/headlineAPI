@@ -1,4 +1,13 @@
-from channels.generic.websocket import AsyncJsonWebsocketConsumer,AsyncConsumer
+from channels.generic.websocket import AsyncJsonWebsocketConsumer
+from database.models import *
+from asgiref.sync import sync_to_async
+
+
+@sync_to_async
+def update_user_recommendation(email):
+    users = User.objects.filter(email=email)
+    print(users)
+    return users
 
 class IndexConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
@@ -13,8 +22,8 @@ class IndexConsumer(AsyncJsonWebsocketConsumer):
 
     # Receive message from WebSocket
     async def receive(self, text_data):
-        print(text_data)
-        # print("here")
+        test = await update_user_recommendation(text_data)
+        print("here")
         # text_data_json = json.loads(text_data)
         # message = text_data_json['message']
        
