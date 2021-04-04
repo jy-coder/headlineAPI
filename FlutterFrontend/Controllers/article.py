@@ -30,9 +30,7 @@ def articles(req):
 
 @csrf_exempt
 @require_http_methods(["GET"])
-def article(req):
-    user = authenticate(req)
-    
+def article(req):   
     # localhost:8000/article/?article_id=46&category=world&tabName=all_articles&index=1
     article = {} # change this
     article_id = req.GET.get("article_id", None)
