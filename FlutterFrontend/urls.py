@@ -1,6 +1,6 @@
 from django.urls import path
 from . import api
-from .Controllers import article, category,search, user, subscription, activity
+from .Controllers import article, category,search, user, subscription, activity,site
 
 urlpatterns = [
     path("test1", api.test1, name="test"),
@@ -28,5 +28,8 @@ urlpatterns = [
 
 
     path("bookmark_article_ids/", activity.bookmark_article_ids , name="bookmark_article_ids"),
+
+    path("sites", site.sites , name="sites"),
+    path("site_subscription",site.site_subscription,name="site_subscription"),
 
 ]

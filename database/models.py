@@ -112,3 +112,18 @@ class NotInterested(models.Model):
     class Meta:
         db_table = "NotInterested"
         unique_together = (('user', 'article'),)
+
+
+class NewsSite(models.Model):
+    site_id = models.AutoField(primary_key=True, unique=True)
+    site_name = models.CharField(max_length=100, blank=True)
+    class Meta:
+        db_table = "NewsSite"
+
+class SiteSubscription(models.Model):
+    site_subscription_id = models.AutoField(primary_key=True, unique=True)
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    site =  models.ForeignKey(NewsSite,on_delete=models.CASCADE)
+    class Meta:
+        db_table = "SiteSubscription"
+        unique_together = (('user', 'site'),)
