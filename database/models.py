@@ -127,3 +127,13 @@ class SiteSubscription(models.Model):
     class Meta:
         db_table = "SiteSubscription"
         unique_together = (('user', 'site'),)
+
+class Likes(models.Model):
+    likes_id = models.AutoField(primary_key=True, unique=True)
+    article = models.ForeignKey(Article,on_delete=models.CASCADE)
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    likes_date = models.DateTimeField(auto_now_add=True, blank=True)
+
+    class Meta:
+        db_table = "Likes"
+        unique_together = (('user', 'article'),)
