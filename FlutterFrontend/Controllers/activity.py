@@ -148,7 +148,7 @@ def like_article(req):
             likes = Likes(user_id=user["user_id"], article=article)
             likes.save()
 
-    #localhost:8000/bookmark/?article_id=1
+    #localhost:8000/like/?article_id=1
     elif(req.method == "DELETE"):
         article_id = req.GET.get("article", None)
         if article_id:
@@ -158,6 +158,7 @@ def like_article(req):
             likes.delete()
 
     return jsonify([],status_code=200)
+    
 @csrf_exempt
 @require_http_methods(["GET"])
 def like_article_ids(req):
