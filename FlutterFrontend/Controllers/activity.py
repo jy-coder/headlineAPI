@@ -121,3 +121,50 @@ def bookmark_article_ids(req):
 
     return jsonify({"data": article_ids},status_code=200)
 
+@csrf_exempt
+@require_http_methods(["GET","POST", "DELETE"])
+def like_article(req):
+    user = authenticate(req)
+
+    if not user:
+        return jsonify([])
+        
+    if(req.method == "GET"):
+        likes = Likes.objects.filter(user_id=user["user_id"]).select_related('article').annotate(id=F('article__article_id')\
+            ,title=F('article__title'),link=F('article__link'),summary=F('article__summary')\
+                    ,description=F('article__description'),image_url=F('article__image_url'),\
+                    category=F('article__category'),source=F('article__source'), publication_date=F('article__publication_date'), date=F('article__date')\
+        ).values("id","title", "link", "summary", "description", "image_url", "category", "source", "publication_date", "date").order_by("-publication_date")
+        
+        
+        return jsonify(list(likes),status_code=200)
+
+    elif(req.method == "POST"):
+        article_id = req.GET.get("article", None)
+
+        if article_id:
+            article_id = int(article_id)
+            article = Article.objects.get(article_id = article_id)
+            likes = Likes(user_id=user["user_id"], article=article)
+            likes.save()
+
+    #localhost:8000/like/?article_id=1
+    elif(req.method == "DELETE"):
+        article_id = req.GET.get("article", None)
+        if article_id:
+            article_id = int(article_id)
+            article = Article.objects.get(article_id = article_id)
+            likes = Likes.objects.filter(article=article, user_id=user["user_id"])
+            likes.delete()
+
+    return jsonify([],status_code=200)
+    
+@csrf_exempt
+@require_http_methods(["GET"])
+def like_article_ids(req):
+    # localhost:8000/bookmark_article_ids
+    user = authenticate(req)
+    article_ids = list(Likes.objects.filter(user_id=user["user_id"]).select_related('article').\
+        annotate(id=F('article__article_id')).values_list("id", flat=True))
+
+    return jsonify({"data": article_ids},status_code=200)

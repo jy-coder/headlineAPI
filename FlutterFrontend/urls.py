@@ -32,4 +32,7 @@ urlpatterns = [
     path("sites", site.sites , name="sites"),
     path("site_subscription",site.site_subscription,name="site_subscription"),
 
+    path("like/", activity.like_article, name="like"),
+    path("like_article_ids/", activity.like_article_ids, name="activity.like_article_ids"),
+
 ]
