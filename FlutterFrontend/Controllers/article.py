@@ -101,13 +101,12 @@ def count(req):
 def recommend(req):
     # localhost:8000/recommend
     user = authenticate(req)
-
     articles = []
 
-    subscription = list(Subscription.objects.filter(user_id=user['user_id'])\
+    subscription = list(Subscription.objects.filter(user_id=10)\
     .select_related("category").values_list("category__category_name",flat=True))
 
-    articles = Recommend.objects.filter(user_id=user["user_id"]).select_related('article')\
+    articles = Recommend.objects.filter(user_id=10).select_related('article')\
         .annotate(id=F('article__article_id'),title=F('article__title'),link=F('article__link'),summary=F('article__summary')\
         ,description=F('article__description'),image_url=F('article__image_url'),\
         category=F('article__category'),source=F('article__source'), publication_date=F('article__publication_date'), date=F('article__date')\

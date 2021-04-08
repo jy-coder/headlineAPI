@@ -10,6 +10,7 @@ ds = DocSim(w2v_model)
 
 
 def update_recommend(email):
+    print("recommending")
     user = User.objects.get(email=email)
     user_id = 0
 
@@ -43,9 +44,11 @@ def update_recommend(email):
         recommend_articles = ds.calculate_similarity(summary,articles_summary,article_id_list,headline)
         for recommend_article in recommend_articles:
             try:
+                similar_headline = Article.objects.get(article_id=similar_to_article[ind]).title
                 recommend = Recommend(user_id=user.user_id,article_id=recommend_article['id'], \
-                    similar_headline=recommend_article['title'],similarity=recommend_article["similarity"], history_id=similar_to_article[ind])
+                    similar_headline=similar_headline,similarity=recommend_article["similarity"])
                 recommend.save()
                 print("successfully save recommend to database")
-            except:
-                print("exception")
+            except Exception as e:
+                pass
+                # print(e)
