@@ -10,7 +10,6 @@ ds = DocSim(w2v_model)
 
 
 def update_recommend(email):
-    print("recommending")
     user = User.objects.get(email=email)
     user_id = 0
 
