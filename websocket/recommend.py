@@ -23,10 +23,11 @@ def update_recommend(email):
     # get latest reading history category based on subscription
     if subscription:
         history = ReadingHistory.objects.filter(user_id=user.user_id).select_related("article")\
-            .values("article__category", "article__summary","article__article_id").annotate(summary=F('article__summary'),id=F("article__article_id"))\
+            .values("article__category", "article__summary","article__article_id").annotate(summary=F('article__summary'),id=F("article__article_id"), category=F("article__category"))\
                 .filter(article__category__in=subscription)
         history_summary = list(history.values_list("summary",flat=True))
         similar_to_article = list(history.values_list("id",flat=True))
+        history_category = list(history.values_list("category",flat=True)) 
 
     # exclude current recommendation & reading history
     # if user read before, it will not appear in recommendation
@@ -44,10 +45,12 @@ def update_recommend(email):
         for recommend_article in recommend_articles:
             try:
                 similar_headline = Article.objects.get(article_id=similar_to_article[ind]).title
-                recommend = Recommend(user_id=user.user_id,article_id=recommend_article['id'], \
-                    similar_headline=similar_headline,similarity=recommend_article["similarity"])
-                recommend.save()
-                print("successfully save recommend to database")
+                similar_category = Article.objects.get(article_id=similar_to_article[ind]).category
+                if (similar_category == history_category[ind]):
+                    recommend = Recommend(user_id=user.user_id,article_id=recommend_article['id'], \
+                        similar_headline=similar_headline,similarity=recommend_article["similarity"])
+                    recommend.save()
+                    print("successfully save recommend to database")
             except Exception as e:
                 pass
                 # print(e)

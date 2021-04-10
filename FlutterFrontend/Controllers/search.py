@@ -24,7 +24,7 @@ def search_suggestion(req):
 @csrf_exempt
 @require_http_methods(["GET"])
 def search_result(req):
-    #localhost:8000/search_result/?article=15
+    #localhost:8000/search_result/?q=fan
     search = req.GET.get("q", "")
 
     if(search == ""):
