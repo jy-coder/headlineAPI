@@ -101,9 +101,8 @@ def count(req):
 def recommend(req):
     # localhost:8000/recommend
     # localhost:8000/recommend/?date=Three%20Days&category=&site=
-    user = {}
-    user["user_id"] = 10
-
+    user = authenticate(req)
+    
     dateRange = req.GET.get("date", "")
     category = req.GET.get("category", "")
     site = req.GET.get("site", "")
