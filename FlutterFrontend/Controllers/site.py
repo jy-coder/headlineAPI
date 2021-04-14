@@ -12,10 +12,10 @@ from django.forms.models import model_to_dict
 @require_http_methods(["GET"])
 def sites(req):
     #localhost:8000/sites
-    sites = list(NewsSite.objects.values())
-    return jsonify(sites,status_code=200)
+    sites = list(NewsSite.objects.values_list("site_name",flat=True))
+    return jsonify({"data": sites},status_code=200)
 
-
+# not used
 @csrf_exempt
 @require_http_methods(["GET"])
 def site_subscription(req):

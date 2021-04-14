@@ -100,19 +100,56 @@ def count(req):
 @require_http_methods(["GET"])
 def recommend(req):
     # localhost:8000/recommend
-    user = authenticate(req)
+    # localhost:8000/recommend/?date=Three%20Days&category=&site=
+    user = {}
+    user["user_id"] = 10
+
+    dateRange = req.GET.get("date", "")
+    category = req.GET.get("category", "")
+    site = req.GET.get("site", "")
+
     articles = []
+    day = 0
+  
+    if dateRange == "One Day":
+        day = 1
+    elif dateRange == "Two Days":
+        day = 2
+    elif dateRange == "Three Days":
+        day = 3
+    elif dateRange == "Four Days":
+        day = 4
+    elif dateRange == "Five Days":
+        day = 5
+    elif dateRange == "Six Days":
+        day = 6
+    elif dateRange == "Seven Days":
+        day = 7
 
     subscription = list(Subscription.objects.filter(user_id=user["user_id"])\
     .select_related("category").values_list("category__category_name",flat=True))
 
-    articles = Recommend.objects.filter(user_id=user["user_id"]).select_related('article')\
-        .annotate(id=F('article__article_id'),title=F('article__title'),link=F('article__link'),summary=F('article__summary')\
-        ,description=F('article__description'),image_url=F('article__image_url'),\
-        category=F('article__category'),source=F('article__source'), publication_date=F('article__publication_date'), date=F('article__date')\
-    ).filter(category__in=subscription).values("article_id","title", "link", 
-    "summary", "description", "image_url", 
+
+    recommends = Recommend.objects.filter(user_id=user["user_id"]).select_related('article')\
+    .annotate(id=F('article__article_id'),title=F('article__title'),link=F('article__link'),summary=F('article__summary')\
+    ,description=F('article__description'),image_url=F('article__image_url'),\
+    category=F('article__category'),source=F('article__source'), publication_date=F('article__publication_date'), date=F('article__date')\
+    ).filter(category__in=subscription).order_by("-id")
+
+    if(category != "" ):
+        recommends = recommends.filter(category=category)
+
+    articles = recommends.values("article_id","title", "link",\
+    "summary", "description", "image_url",\
     "category", "source", "publication_date", "date").annotate(id=F('article_id'))
+
+    if dateRange != "":
+        print(datetime.now()-timedelta(days=day))
+        articles = articles.filter(publication_date__date=datetime.now()-timedelta(days=day))
+
+    if site != "":
+        articles = articles.filter(source=site)
+
     articles = list(articles.values())
 
     return jsonify(articles,status_code=200)

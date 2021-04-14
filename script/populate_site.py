@@ -8,7 +8,7 @@ from database.models import *
 
 
 if __name__ == '__main__':
-    sites = ["The Straits Times","Channel News Asia", "CNBC", "New York Daily News", "business"]
+    sites = ["The Straits Times","Channel News Asia", "CNBC", "New York Daily News", "The Guardian","Yahoo News","Foxnews"]
     for site in sites:
         site = NewsSite(site_name=site)
         print("site saved to database")
