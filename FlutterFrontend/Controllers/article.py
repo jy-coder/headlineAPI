@@ -133,25 +133,25 @@ def recommend(req):
     .annotate(id=F('article__article_id'),title=F('article__title'),link=F('article__link'),summary=F('article__summary')\
     ,description=F('article__description'),image_url=F('article__image_url'),\
     category=F('article__category'),source=F('article__source'), publication_date=F('article__publication_date'), date=F('article__date')\
-    ).filter(category__in=subscription).order_by("-recommend_id")
+    ).filter(category__in=subscription).order_by("-publication_date")
 
     if(category != "" ):
         recommends = recommends.filter(category=category)
 
-    articles = recommends.values("article_id","title", "link",\
+    recommends = recommends.values("article_id","title", "link",\
     "summary", "description", "image_url",\
     "category", "source", "publication_date", "date").annotate(id=F('article_id'))
 
     if dateRange != "":
         print(datetime.now()-timedelta(days=day))
-        articles = articles.filter(publication_date__date=datetime.now()-timedelta(days=day))
+        recommends = recommends.filter(publication_date__date=datetime.now()-timedelta(days=day))
 
     if site != "":
-        articles = articles.filter(source=site)
+        recommends = recommends.filter(source=site)
 
-    articles = list(articles.values())
+    recommends = list(recommends.values())
 
-    return jsonify(articles,status_code=200)
+    return jsonify(recommends,status_code=200)
 
 
 @csrf_exempt
