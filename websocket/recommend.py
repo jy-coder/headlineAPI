@@ -6,12 +6,14 @@ import gensim.downloader as api
 model_path = api.load("word2vec-google-news-300", return_path=True)
 w2v_model = KeyedVectors.load_word2vec_format(model_path, binary=True,limit=10000)
 from .utils.DocSim import DocSim
+from time import sleep
 ds = DocSim(w2v_model)
 
 
 def update_recommend(email):
     user = User.objects.get(email=email)
-    user_id = 0
+    
+    sleep(2)
 
     if not user:
         return

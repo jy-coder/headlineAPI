@@ -133,7 +133,7 @@ def recommend(req):
     .annotate(id=F('article__article_id'),title=F('article__title'),link=F('article__link'),summary=F('article__summary')\
     ,description=F('article__description'),image_url=F('article__image_url'),\
     category=F('article__category'),source=F('article__source'), publication_date=F('article__publication_date'), date=F('article__date')\
-    ).filter(category__in=subscription).order_by("-id")
+    ).filter(category__in=subscription).order_by("-recommend_id")
 
     if(category != "" ):
         recommends = recommends.filter(category=category)
@@ -158,10 +158,20 @@ def recommend(req):
 @require_http_methods(["GET"])
 def trend(req):
     # localhost:8000/trend
-    trend_articles_id = ReadingHistory.objects.values("article_id").annotate(dcount=Count('article_id'))\
-        .order_by('-dcount').values_list('article_id', flat=True)[:5]
-    articles = Article.objects.filter(article_id__in=trend_articles_id)
-    articles = list(articles.values().annotate(id=F('article_id')))
+    user = authenticate(req)
 
-    return jsonify(articles,status_code=200)
+    articles = Likes.objects.select_related('article').values('article_id', 'article__article_id')\
+        .annotate(dcount=Count('article__article_id')).annotate(count=F('dcount'),title=F('article__title'),link=F('article__link'),summary=F('article__summary')\
+    ,description=F('article__description'),image_url=F('article__image_url'),id=F('article_id'),\
+    category=F('article__category'),source=F('article__source'), publication_date=F('article__publication_date'), date=F('article__date')).order_by('-dcount')
+
+    
+    if user:
+        subscription = list(Subscription.objects.filter(user_id=user["user_id"])\
+        .select_related("category").values_list("category__category_name",flat=True))
+
+        articles = articles.filter(category__in=subscription)
+
+
+    return jsonify(list(articles),status_code=200)
 

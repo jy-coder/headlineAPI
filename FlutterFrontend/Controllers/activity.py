@@ -13,41 +13,15 @@ from django.forms.models import model_to_dict
 def history(req):
     user = authenticate(req)
     history = []
-
-
     date = req.GET.get("date", None)
     if(req.method == "GET"):
-       
-        # for date filtering
-        # if not date:
-        #     history = ReadingHistory.objects.filter(user_id=user["user_id"])
-
-        # elif date:
-        #     set_date_gt = datetime.now()
-        #     set_date_lt = datetime.now()
-
-        #     if date == "from 7 days ago":
-        #         set_date_gt = datetime.now()-timedelta(days=7)
-        #         set_date_lt = datetime.now() + timedelta(days=1)
-       
-        #     elif date == "from 14 days ago":
-        #         set_date_lt = datetime.now()-timedelta(days=7)
-        #         set_date_gt= datetime.now()-timedelta(days=14)
-
-
-            # history = ReadingHistory.objects.filter(user_id=user["user_id"],history_date__gte=set_date_gt.strftime("%Y-%m-%d"))
-
-    
-        # print(history)
- 
-
         history = ReadingHistory.objects.filter(user_id=user["user_id"]).select_related('article')\
                 .annotate(id=F('article__article_id'),title=F('article__title'),link=F('article__link'),summary=F('article__summary')\
                 ,description=F('article__description'),image_url=F('article__image_url'),\
                 category=F('article__category'),source=F('article__source'), publication_date=F('article__publication_date'), date=F('article__date')\
         ).values("id","title", "link", 
         "summary", "description", "image_url", 
-        "category", "source", "publication_date", "date","history_date").order_by("-history_date")
+        "category", "source", "publication_date", "date","history_date").order_by("-history_id")
 
 
         return jsonify(list(history),status_code=200)
