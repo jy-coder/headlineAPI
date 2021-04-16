@@ -104,9 +104,17 @@ def recommend(req):
     user = authenticate(req)
     
     dateRange = req.GET.get("date", "")
-    category = req.GET.get("category", "")
-    site = req.GET.get("site", "")
+    category_str = req.GET.get("category", "")
+    site_str = req.GET.get("site", "")
 
+    category = []
+    site = []
+
+    if category_str != "":
+        category = string_to_list(category_str)
+    if site != "":
+        site = string_to_list(site_str)
+    
     articles = []
     day = 0
   
@@ -133,21 +141,19 @@ def recommend(req):
     .annotate(id=F('article__article_id'),title=F('article__title'),link=F('article__link'),summary=F('article__summary')\
     ,description=F('article__description'),image_url=F('article__image_url'),\
     category=F('article__category'),source=F('article__source'), publication_date=F('article__publication_date'), date=F('article__date')\
-    ).filter(category__in=subscription).order_by("-publication_date")
+    ).filter(category__in=subscription).order_by("-publication_date").annotate(id=F('article_id'))
 
-    if(category != "" ):
-        recommends = recommends.filter(category=category)
+  
 
-    recommends = recommends.values("article_id","title", "link",\
-    "summary", "description", "image_url",\
-    "category", "source", "publication_date", "date").annotate(id=F('article_id'))
+    if category_str != "" :
+        recommends = recommends.filter(category__in=category)
 
     if dateRange != "":
-        print(datetime.now()-timedelta(days=day))
         recommends = recommends.filter(publication_date__date=datetime.now()-timedelta(days=day))
 
-    if site != "":
-        recommends = recommends.filter(source=site)
+    if site_str != "":
+        recommends = recommends.filter(source__in=site)
+
 
     recommends = list(recommends.values())
 

@@ -49,5 +49,7 @@ def parse_json(req):
 def jsonify(obj, status_code=None):
 	return HttpResponse(json.dumps(obj, indent=4, sort_keys=True, default=str),status=status_code,content_type="application/json")
 
+def string_to_list(text):
+	return text.split(",")
 
 
