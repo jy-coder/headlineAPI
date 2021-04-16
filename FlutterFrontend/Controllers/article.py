@@ -136,8 +136,9 @@ def recommend(req):
     subscription = list(Subscription.objects.filter(user_id=user["user_id"])\
     .select_related("category").values_list("category__category_name",flat=True))
 
+    not_interested = list(NotInterested.objects.filter(user_id=user["user_id"]).values_list("article_id" ,flat=True))
 
-    recommends = Recommend.objects.filter(user_id=user["user_id"]).select_related('article')\
+    recommends = Recommend.objects.filter(user_id=user["user_id"]).exclude(article_id__in=not_interested).select_related('article')\
     .annotate(id=F('article__article_id'),title=F('article__title'),link=F('article__link'),summary=F('article__summary')\
     ,description=F('article__description'),image_url=F('article__image_url'),\
     category=F('article__category'),source=F('article__source'), publication_date=F('article__publication_date'), date=F('article__date')\
