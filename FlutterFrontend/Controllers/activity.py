@@ -142,3 +142,16 @@ def like_article_ids(req):
         annotate(id=F('article__article_id')).values_list("id", flat=True))
 
     return jsonify({"data": article_ids},status_code=200)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def not_interested(req):
+	user = authenticate(req)
+	article_id = req.GET.get("article", None)
+	if article_id:
+		 article_id = int(article_id)
+		 article = Article.objects.get(article_id = article_id)	
+		 not_interested = NotInterested(user_id=user["user_id"], article=article)
+		 not_interested.save()
+		 
+	return jsonify([],status_code=200)
