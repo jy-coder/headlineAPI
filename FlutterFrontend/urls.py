@@ -35,4 +35,6 @@ urlpatterns = [
     path("like/", activity.like_article, name="like"),
     path("like_article_ids/", activity.like_article_ids, name="activity.like_article_ids"),
 
+    path("not_interested/", activity.not_interested, name="not_interested"),
+
 ]
