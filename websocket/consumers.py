@@ -22,7 +22,7 @@ class IndexConsumer(AsyncJsonWebsocketConsumer):
     # Receive message from WebSocket
     async def receive(self, text_data):
         test = await update_user_recommendation(text_data)
-        print("here")
+        # print("here")
         # text_data_json = json.loads(text_data)
         # message = text_data_json['message']
        

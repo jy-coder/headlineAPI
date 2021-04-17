@@ -57,3 +57,23 @@ class DocSim:
             # results.sort(key=lambda k: k, reverse=True)
         return results
         # return list(filter(lambda x: x["score"] >= 85, results))
+
+    def calculate_similarity_r(self, source_doc, target_docs=None,threshold=0):
+        """Calculates & returns similarity scores between given source document & all
+        the target documents."""
+        if not target_docs:
+            return []
+
+        if isinstance(target_docs, str):
+            target_docs = [target_docs]
+
+        source_vec = self.vectorize(source_doc)
+        results = []
+        for ind,doc in enumerate(target_docs):
+            target_vec = self.vectorize(doc)
+            sim_score = self._cosine_sim(source_vec, target_vec)
+            # print(sim_score)
+            if sim_score > threshold and sim_score >= 0.60 or sim_score == 1:
+                # pass
+                return True
+        return False
