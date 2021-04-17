@@ -8,6 +8,9 @@ from django.db.models import F
 from datetime import datetime, timedelta
 from django.forms.models import model_to_dict
 from django.db.models import Count
+from functools import reduce
+from django.db.models import Q
+import operator
 
 @csrf_exempt
 @require_http_methods(["GET"])
@@ -182,3 +185,16 @@ def trend(req):
 
     return jsonify(list(articles),status_code=200)
 
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def related_article(req):
+    # localhost:8000/related?id=198
+    article_id = req.GET.get("id", None)
+    keywords = Article.objects.get(article_id=article_id).keywords
+    keyword_list = keywords.split(",")
+    articles = Article.objects.filter(reduce(operator.or_, (Q(keywords__contains=x) for x in keyword_list))).exclude(article_id=article_id)
+
+    articles = articles.values().annotate(id=F('article_id'))
+
+    return jsonify(list(articles),status_code=200)
