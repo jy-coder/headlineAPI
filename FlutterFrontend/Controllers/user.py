@@ -14,7 +14,11 @@ from django.forms.models import model_to_dict
 def register(req):
     user = authenticate(req)
     save_user = User(uuid=user["uid"],email=user["email"])
-    save_user.save()
+    try:
+        save_user.save()
+    except:
+        return HttpResponse(status=403)
+        
     return HttpResponse(status=201)
 
 
