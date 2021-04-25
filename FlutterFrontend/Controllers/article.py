@@ -11,6 +11,7 @@ from django.db.models import Count
 from functools import reduce
 from django.db.models import Q
 import operator
+from random import shuffle
 
 @csrf_exempt
 @require_http_methods(["GET"])
@@ -105,7 +106,7 @@ def recommend(req):
     # localhost:8000/recommend
     # localhost:8000/recommend/?date=Three%20Days&category=&site=
     user = authenticate(req)
-    
+   
     dateRange = req.GET.get("date", "")
     category_str = req.GET.get("category", "")
     site_str = req.GET.get("site", "")
@@ -198,3 +199,24 @@ def related_article(req):
     articles = articles.values().annotate(id=F('article_id'))
 
     return jsonify(list(articles),status_code=200)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def advertisement(req):
+    # localhost:8000/advertisement
+    user = authenticate(req)
+    
+    num_of_ads = 0
+    not_interested = list(NotInterested.objects.filter(user_id=user["user_id"]).values_list("article_id" ,flat=True))
+
+    keywords = list(Recommend.objects.filter(user_id=user["user_id"]).exclude(article_id__in=not_interested).select_related('article')\
+    .annotate(keywords=F('article__keywords')).values("keywords"))
+    shuffle(keywords)
+
+    if len(keywords) >= 5:
+        num_of_ads =  len(keywords) // 5
+
+    keywords = keywords[:num_of_ads]
+
+
+    return jsonify(keywords,status_code=200)

@@ -38,5 +38,6 @@ urlpatterns = [
     path("not_interested/", activity.not_interested, name="not_interested"),
 
     path("related/", article.related_article, name="related"),
+    path("advertisement", article.advertisement, name="advertisement"),
 
 ]
