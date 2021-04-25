@@ -65,40 +65,6 @@ def article(req):
     
     return jsonify(article,status_code=200)
 
-@csrf_exempt
-@require_http_methods(["GET"])
-def count(req):
-    # localhost:8000/count/?tabName=all_articles&category=world
-    # localhost:8000/count/?tabName=daily_read
-    user = authenticate(req)
-
-    """
-    count number of articles in each category of current date
-    """
-    tabName = ""
-    articles_count = 0
-    articles = []
-
-    tabName = req.GET.get("tabName", None)
-    category = req.GET.get("category", "all")
-    if tabName == "all_articles":  
-        if category != "all":
-            articles = Article.objects.filter(category=category)  
-        else:
-            articles = Article.objects.all()
-  
-
-    elif user and tabName != "all_articles":
-        if tabName =="daily_read":  
-            articles= Recommend.objects.filter(user_id=user["user_id"])# always be up to date
-        elif tabName == "History":
-            articles = ReadingHistory.objects.filter(user_id=user["user_id"])
-        elif tabName == "Saved":
-            articles = Bookmark.objects.filter(user_id=user["user_id"]) # get all bookmark
- 
-    articles_count = len(articles)
-
-    return jsonify({"count" : articles_count},status_code=200)
 
 @csrf_exempt
 @require_http_methods(["GET"])
@@ -205,7 +171,7 @@ def related_article(req):
 def advertisement(req):
     # localhost:8000/advertisement
     user = authenticate(req)
-    
+
     num_of_ads = 0
     not_interested = list(NotInterested.objects.filter(user_id=user["user_id"]).values_list("article_id" ,flat=True))
 
