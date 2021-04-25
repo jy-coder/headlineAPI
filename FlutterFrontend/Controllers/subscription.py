@@ -13,20 +13,20 @@ def save_subscription(records, user):
 	for k,v in records.items():
 		category = Category.objects.get(category_id =k)
 
-		subscription = Subscription.objects.filter(user_id=user["user_id"],category=category)
+		subscription = Subscription.objects.filter(user_id=user,category=category)
         
 		if v and not subscription:
-			subscription = Subscription(user_id=user["user_id"], category=category)
+			subscription = Subscription(user_id=user, category=category)
 			subscription.save()
 
 		elif not v and subscription:
-			subscription = Subscription.objects.get(user_id=user["user_id"],category=category)
+			subscription = Subscription.objects.get(user_id=user,category=category)
 			subscription.delete()
 
 
 def get_subscription(user):
 	records = []
-	subscription = Subscription.objects.filter(user_id=user["user_id"])
+	subscription = Subscription.objects.filter(user_id=user)
 	category_id_list = list(subscription.values_list("category",flat=True))
 	categories = list(Category.objects.values())
 
@@ -70,7 +70,7 @@ def user_subscription(req):
         return jsonify([], status_code=401)
         
     subscriptions = []
-    subscriptions = Subscription.objects.filter(user_id=user["user_id"]).select_related("category").values("category__category_name").annotate(category_name=F('category__category_name'))
+    subscriptions = Subscription.objects.filter(user_id=user).select_related("category").values("category__category_name").annotate(category_name=F('category__category_name'))
 
     # include 'all' category
     all_dict = {}
