@@ -6,7 +6,6 @@ urlpatterns = [
     path("test1", api.test1, name="test"),
 
     path("category", category.category, name="category"),
-    path("count/",article.count, name="count"),
 
     path("register", user.register, name="register"),
     path("last_active", user.last_active, name="last_active"),

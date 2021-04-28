@@ -19,17 +19,14 @@ def retrieve_user(email):
 	except:
 		return None
 
-def authenticate(req, test=False):
+def authenticate(req):
 	id_token = req.headers.get("X-Id-Token", "")
 
-	if test:
-		user = retrieve_user("test@test.com")
+	if id_token:
+		user = auth.verify_id_token(id_token)
+		return retrieve_user(user["email"])
 	else:
-		if id_token:
-			user = auth.verify_id_token(id_token)
-			return retrieve_user(user["email"])
-		else:
-			return None
+		return None
 	
 
 def error(message,status_code):
