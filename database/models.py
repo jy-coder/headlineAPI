@@ -3,7 +3,7 @@ from django.db import models
 
 class User(models.Model):
     user_id = models.AutoField(primary_key=True, unique=True)
-    uuid = models.CharField(max_length =100, unique=True,default="")
+    uuid = models.CharField(max_length =100, blank=True)
     email = models.CharField(max_length=1000, unique=True)
     full_name = models.CharField(max_length=1000)
     last_active = models.DateTimeField(auto_now_add=True, blank=True)
@@ -137,3 +137,9 @@ class Likes(models.Model):
     class Meta:
         db_table = "Likes"
         unique_together = (('user', 'article'),)
+
+class Advertisement(models.Model):
+    adv_id = models.AutoField(primary_key=True, unique=True)
+    adv_category=models.TextField(blank=True)
+    web_link = models.TextField(blank=True)
+    img_link = models.TextField(blank=True)

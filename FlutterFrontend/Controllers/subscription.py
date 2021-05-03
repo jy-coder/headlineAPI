@@ -64,6 +64,7 @@ def subscription(req):
 @csrf_exempt
 @require_http_methods(["GET"])
 def user_subscription(req):
+    #localhost:8000/user_subscription
     user = authenticate(req)
     
     if user == None:

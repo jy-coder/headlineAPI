@@ -12,6 +12,7 @@ from functools import reduce
 from django.db.models import Q
 import operator
 from random import shuffle
+from ..Controllers.subscription import get_subscription
 
 @csrf_exempt
 @require_http_methods(["GET"])
@@ -171,11 +172,8 @@ def related_article(req):
 def advertisement(req):
     # localhost:8000/advertisement
     user = authenticate(req)
+    subscriptions = Subscription.objects.filter(user_id=user).select_related("category")\
+        .values_list("category__category_name",flat=True).annotate(category_name=F('category__category_name'))
 
-    num_of_ads = 0
-    not_interested = list(NotInterested.objects.filter(user_id=user).values_list("article_id" ,flat=True))
-
-    keywords = list(Recommend.objects.filter(user_id=user).exclude(article_id__in=not_interested).select_related('article')\
-    .annotate(keywords=F('article__keywords')).values("keywords"))
-
-    return jsonify(keywords[:len(keywords)-1],status_code=200)
+    advertisments = Advertisement.objects.filter(adv_category__in=list(subscriptions)).values()
+    return jsonify(list(advertisments)[:10],status_code=200)
