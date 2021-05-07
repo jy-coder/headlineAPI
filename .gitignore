@@ -116,5 +116,5 @@ media/
 # !**/migrations/__init__.py
 docker-compose.yml
 Dockerfile
-GoogleNews-vectors-negative300.bin
-/script/populate_article.py
+# GoogleNews-vectors-negative300.bin
+# /script/populate_article.py
