@@ -16,13 +16,11 @@ from ..Controllers.subscription import get_subscription
 
 @csrf_exempt
 @require_http_methods(["GET"])
-def articles(req):
-    user = authenticate(req)
-    
+def articles(req):    
     page_type = req.GET.get("type", "all_articles")
     category= req.GET.get("category", "all")
   
-    # localhost:8000/article/?type=all_articles
+    # localhost:8000/articles/?type=all_articles
     if page_type == "all_articles":
         if category == "all":
             articles =  Article.objects.order_by("-article_id").annotate(id=F('article_id'))

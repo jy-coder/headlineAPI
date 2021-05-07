@@ -143,3 +143,5 @@ class Advertisement(models.Model):
     adv_category=models.TextField(blank=True)
     web_link = models.TextField(blank=True)
     img_link = models.TextField(blank=True)
+    class Meta:
+        db_table = "Advertisement"

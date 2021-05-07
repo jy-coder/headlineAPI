@@ -56,13 +56,6 @@ ROOT_URLCONF = 'urls'
 CHANNEL_LAYERS = {
     "default": {
          "BACKEND": "channels.layers.InMemoryChannelLayer"
-    #     'BACKEND': 'channels_redis.core.RedisChannelLayer',
-    #     'CONFIG': {
-    #         "hosts": [
-    #           'redis://h:4xCsr1S8wuCsaPt0dgFdJ06EGPsAnJso;@redis-12894.c256.us-east-1-2.ec2.cloud.redislabs.com:12894' 
-    #         ],
-    #     },
-    # },
 }}
 
 # TEMPLATES = [
