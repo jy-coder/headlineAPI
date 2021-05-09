@@ -11,6 +11,7 @@ import requests
 from bs4 import BeautifulSoup
 import json
 from textblob import TextBlob
+from datetime import datetime, timedelta
 
 # scraping from rss
 def get_rss(url):
@@ -288,7 +289,7 @@ def extract_info(article_links,category,source):
                     print(e)
 
   
-
+       
 
 
         #print to check each article
@@ -590,10 +591,9 @@ if __name__ == '__main__':
                 "travel":"https://www.asiaone.com/travel",
             },
         },
-
-      
     }
 
+      
     for source, _ in rss.items():
         for mainCategory, _ in rss[source].items():
             for category, url in rss[source][mainCategory].items():
@@ -607,3 +607,13 @@ if __name__ == '__main__':
                 article_links = get_url(source, url)
                 print(article_links)
                 extract_info(article_links, mainCategory, source)
+
+
+    article_ids= list(Article.objects.filter(publication_date__gte = datetime.now()-timedelta(days=1)).order_by("-publication_date").values_list("article_id",flat=True))[:3]
+    for article_id in article_ids:
+        for n in [1,4,7]:
+            like = Likes(article_id=article_id, user_id=n)
+            try:
+                like.save()
+            except:
+                pass

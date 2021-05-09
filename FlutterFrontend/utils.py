@@ -17,14 +17,14 @@ def retrieve_user(email):
 		user = User.objects.get(email=email)
 		return user.user_id
 	except:
-		return None
+		return email
 
 def authenticate(req):
 	id_token = req.headers.get("X-Id-Token", "")
-
 	if id_token:
 		user = auth.verify_id_token(id_token)
-		return retrieve_user(user["email"])
+		if user != None:
+			return retrieve_user(user["email"])
 	else:
 		return None
 	

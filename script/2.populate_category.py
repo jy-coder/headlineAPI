@@ -10,7 +10,7 @@ from database.models import *
 
 
 if __name__ == '__main__':
-    catogries = ["all","world","business","asia","singapore", "life","covid19", "tech", "opinion", "sport"]
+    catogries = ["all","world","business","asia","singapore", "life","Covid-19", "tech", "opinion", "sport"]
     for category in catogries:
         category = Category(category_name=category)
         print("category saved to database")

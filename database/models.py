@@ -74,21 +74,6 @@ class Recommend(models.Model):
         db_table = "Recommend"
         unique_together = (('user', 'article'),)
 
-class Trend(models.Model):
-    article_id = models.AutoField(primary_key=True, unique=True)
-    title = models.CharField(max_length=1000, blank=True)
-    link = models.CharField(max_length=1000, blank=True)
-    summary = models.CharField(max_length=3000, blank=True)
-    description = models.TextField( blank=True)
-    image_url = models.TextField( blank=True)
-    keywords = models.CharField(max_length=3000, blank=True)
-    category = models.CharField(max_length=100, blank=True)
-    source = models.CharField(max_length=100, blank=True)
-    publication_date = models.DateTimeField(auto_now_add=True, blank=True)
-    date = models.DateTimeField(auto_now_add=True, blank=True)
-    class Meta:
-        db_table = "Trend"
-
 class RelatedArticle(models.Model):
     related_id = models.AutoField(primary_key=True, unique=True)
     article = models.ForeignKey(Article,on_delete=models.CASCADE)
@@ -120,13 +105,6 @@ class NewsSite(models.Model):
     class Meta:
         db_table = "NewsSite"
 
-class SiteSubscription(models.Model):
-    site_subscription_id = models.AutoField(primary_key=True, unique=True)
-    user = models.ForeignKey(User,on_delete=models.CASCADE)
-    site =  models.ForeignKey(NewsSite,on_delete=models.CASCADE)
-    class Meta:
-        db_table = "SiteSubscription"
-        unique_together = (('user', 'site'),)
 
 class Likes(models.Model):
     likes_id = models.AutoField(primary_key=True, unique=True)

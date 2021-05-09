@@ -19,16 +19,19 @@ from ..Controllers.subscription import get_subscription
 def articles(req):    
     page_type = req.GET.get("type", "all_articles")
     category= req.GET.get("category", "all")
-  
+
+    
     # localhost:8000/articles/?type=all_articles
     if page_type == "all_articles":
         if category == "all":
-            articles =  Article.objects.order_by("-article_id").annotate(id=F('article_id'))
+            articles =  Article.objects.order_by("-article_id").annotate(id=F('article_id')).filter(publication_date__gte = datetime.now()-timedelta(days=1))
         else:
-            articles =  Article.objects.filter(category=category).order_by("-article_id").annotate(id=F('article_id'))
-      
+            articles =  Article.objects.filter(category=category).annotate(id=F('article_id')).filter(publication_date__gte = datetime.now()-timedelta(days=1))
 
-    return jsonify(list(articles.values())[:50],status_code=200)
+    articles = list(articles.values())[:50]
+    shuffle(articles)
+ 
+    return jsonify(articles,status_code=200)
 
 
 @csrf_exempt
@@ -125,7 +128,8 @@ def recommend(req):
         recommends = recommends.filter(source__in=site)
 
 
-    recommends = list(recommends.values())
+    recommends = list(recommends.values())[:100]
+    shuffle(recommends)
 
     return jsonify(recommends,status_code=200)
 
@@ -139,7 +143,8 @@ def trend(req):
     articles = Likes.objects.select_related('article').values('article_id', 'article__article_id')\
         .annotate(dcount=Count('article__article_id')).annotate(count=F('dcount'),title=F('article__title'),link=F('article__link'),summary=F('article__summary')\
     ,description=F('article__description'),image_url=F('article__image_url'),id=F('article_id'),\
-    category=F('article__category'),source=F('article__source'), publication_date=F('article__publication_date'), date=F('article__date')).order_by('-dcount')
+    category=F('article__category'),source=F('article__source'), publication_date=F('article__publication_date'), date=F('article__date')).\
+        filter(publication_date__gte = datetime.now()-timedelta(days=1)).order_by('-dcount')
 
     
     if user:
@@ -163,7 +168,7 @@ def related_article(req):
 
     articles = articles.values().annotate(id=F('article_id'))
 
-    return jsonify(list(articles),status_code=200)
+    return jsonify(list(articles)[:5],status_code=200)
 
 @csrf_exempt
 @require_http_methods(["GET"])

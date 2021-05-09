@@ -10,7 +10,7 @@ from django.forms.models import model_to_dict
 from django.db.models import Count
 from django.db.models import Max
 
-
+# deprecated
 @csrf_exempt
 @require_http_methods(["GET"])
 def search_suggestion(req):
@@ -30,6 +30,6 @@ def search_result(req):
     if(search == ""):
         return jsonify([],status_code=200)
 
-    articles = Article.objects.order_by("-publication_date").annotate(id=F('article_id')).filter(title__contains=search)[:10]
+    articles = Article.objects.order_by("-publication_date").annotate(id=F('article_id')).filter(title__icontains=search)[:10]
     articles = list(articles.values())
     return jsonify(articles,status_code=200)

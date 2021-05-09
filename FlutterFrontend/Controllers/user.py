@@ -12,9 +12,9 @@ from django.forms.models import model_to_dict
 @csrf_exempt
 @require_http_methods(["POST"])
 def register(req):
-    user = authenticate(req)
-    save_user = User(uuid=user["uid"],email=user["email"])
-    save_user.save()
+    email = authenticate(req)
+    user = User(email=email)
+    user.save()
     return HttpResponse(status=201)
 
 
