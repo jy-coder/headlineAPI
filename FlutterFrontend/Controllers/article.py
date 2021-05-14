@@ -19,7 +19,7 @@ from ..Controllers.subscription import get_subscription
 def articles(req):    
     # localhost:8000/articles/?type=all_articles
     articles =  Article.objects.order_by("-publication_date").annotate(id=F('article_id')).filter(publication_date__gte = datetime.now()-timedelta(days=1))    
-    articles = list(articles.values())[:100]
+    articles = list(articles.values())[:500]
     return jsonify(articles,status_code=200)
 
 

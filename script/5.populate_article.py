@@ -281,7 +281,7 @@ def extract_info(article_links,category,source):
                     if findList[x].lower() in title.lower():
                         category = "Covid-19"
                 try:
-                    article = Article(title=title,link=link,summary=summary,keywords=keywords,category=category,source=source,publication_date=publication_date,description=description,image_url=image_url)
+                    article = Article(title=title,link=link,summary=summary.strip(),keywords=keywords,category=category,source=source,publication_date=publication_date,description=description.strip(),image_url=image_url)
                     article.save()
                     print("article successfully saved to database")
                 except Exception as e:
