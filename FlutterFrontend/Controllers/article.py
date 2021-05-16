@@ -67,7 +67,7 @@ def recommend(req):
     dateRange = req.GET.get("date", "")
     category_str = req.GET.get("category", "")
     site_str = req.GET.get("site", "")
-
+    items = []
     category = []
     site = []
 
@@ -76,7 +76,6 @@ def recommend(req):
     if site != "":
         site = string_to_list(site_str)
     
-    articles = []
     day = 0
   
     if dateRange == "One Day":
@@ -105,22 +104,22 @@ def recommend(req):
     category=F('article__category'),source=F('article__source'), publication_date=F('article__publication_date'), date=F('article__date')\
     ).filter(category__in=subscription).order_by("-publication_date").annotate(id=F('article_id'))
 
-  
-
+    if len(recommends) != 0:
+        items = recommends
+    else:
+        items = Article.objects.order_by("-publication_date").annotate(id=F('article_id')).filter(publication_date__gte = datetime.now()-timedelta(days=1),category__in=subscription)
     if category_str != "" :
-        recommends = recommends.filter(category__in=category)
-
+        items = items.filter(category__in=category)
     if dateRange != "":
-        recommends = recommends.filter(publication_date__date=datetime.now()-timedelta(days=day))
-
+        items = items.filter(publication_date__date=datetime.now()-timedelta(days=day))
     if site_str != "":
-        recommends = recommends.filter(source__in=site)
-
-
-    recommends = list(recommends.values())[:100]
-    shuffle(recommends)
-
-    return jsonify(recommends,status_code=200)
+        items = items.filter(source__in=site)
+     
+    articles = list(items.values())[:100]
+    shuffle(articles)
+    return jsonify(articles,status_code=200)
+    
+    
 
 
 @csrf_exempt
