@@ -59,7 +59,7 @@ def bookmark(req):
             ,title=F('article__title'),link=F('article__link'),summary=F('article__summary')\
                     ,description=F('article__description'),image_url=F('article__image_url'),\
                     category=F('article__category'),source=F('article__source'), publication_date=F('article__publication_date'), date=F('article__date')\
-        ).values("id","title", "link", "summary", "description", "image_url", "category", "source", "publication_date", "date").order_by("-publication_date")
+        ).values("id","title", "link", "summary", "description", "image_url", "category", "source", "publication_date", "date").order_by("-date")
         
         
         return jsonify(list(bookmark),status_code=200)
