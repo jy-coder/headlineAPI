@@ -74,7 +74,7 @@ CHANNEL_LAYERS = {
 #     },
 # ]
 
-# WSGI_APPLICATION = 'wsgi.application'
+WSGI_APPLICATION = 'wsgi.application'
 ASGI_APPLICATION = "routing.application"
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
