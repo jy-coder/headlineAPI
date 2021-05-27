@@ -77,20 +77,20 @@ def recommend(req):
         site = string_to_list(site_str)
     
     day = 0
-  
-    if dateRange == "1 Day":
+    
+    if dateRange == "1":
         day = 1
-    elif dateRange == "2 Days":
+    elif dateRange == "2":
         day = 2
-    elif dateRange == "3 Days":
+    elif dateRange == "3":
         day = 3
-    elif dateRange == "4 Days":
+    elif dateRange == "4":
         day = 4
-    elif dateRange == "5 Days":
+    elif dateRange == "5":
         day = 5
-    elif dateRange == "6 Days":
+    elif dateRange == "6":
         day = 6
-    elif dateRange == "7 Days":
+    elif dateRange == "7":
         day = 7
 
     subscription = list(Subscription.objects.filter(user_id=user)\
