@@ -106,7 +106,7 @@ def recommend(req):
     if len(recommends) != 0:
         items = recommends
     else:
-        items = Article.objects.order_by("-publication_date").annotate(id=F('article_id')).filter(publication_date__gte = datetime.now()-timedelta(days=day),category__in=subscription)
+        items = Article.objects.order_by("-publication_date").annotate(id=F('article_id')).filter(category__in=subscription)
     if category_str != "" :
         items = items.filter(category__in=category)
     if dateRange != "":
@@ -114,7 +114,7 @@ def recommend(req):
     if site_str != "":
         items = items.filter(source__in=site)
      
-    articles = list(items.values())[:100]
+    articles = list(items.values())[:200]
     shuffle(articles)
     return jsonify(articles,status_code=200)
     
