@@ -106,7 +106,7 @@ def recommend(req):
     if len(recommends) != 0:
         items = recommends
     else:
-        items = Article.objects.order_by("-publication_date").annotate(id=F('article_id')).filter(category__in=subscription)
+        items = Article.objects.order_by("-publication_date").exclude(article_id__in=not_interested).annotate(id=F('article_id')).filter(category__in=subscription)
     if category_str != "" :
         items = items.filter(category__in=category)
     if dateRange != "":
