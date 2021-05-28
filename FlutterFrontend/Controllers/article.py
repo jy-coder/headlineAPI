@@ -114,7 +114,7 @@ def recommend(req):
     if site_str != "":
         items = items.filter(source__in=site)
      
-    articles = list(items.values())[:200]
+    articles = list(items.values())[:100]
     shuffle(articles)
     return jsonify(articles,status_code=200)
     
